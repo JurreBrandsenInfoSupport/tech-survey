@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-neutral-900 text-neutral-100;
+h2 {
+  color: red;
+}
+
+p {
+  color: blue;
 }
