@@ -2,7 +2,7 @@
 
 import { type AnswerOption, type Question, type Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
 
@@ -19,6 +19,21 @@ export function Test({
 
   // State to store user responses
   const [responses, setResponses] = useState<Record<string, string>>({});
+
+  // Load saved responses from local storage when component mounts
+  useEffect(() => {
+    const savedResponses = localStorage.getItem("surveyResponses");
+    if (savedResponses) {
+      setResponses(JSON.parse(savedResponses));
+    }
+  }, []);
+
+  // Save responses to local storage whenever it changes and there are responses
+  useEffect(() => {
+    if (Object.keys(responses).length > 0) {
+      localStorage.setItem("surveyResponses", JSON.stringify(responses));
+    }
+  }, [responses]);
 
   // Mutation to submit user responses
   const submitResponse = api.survey.setQuestionResult.useMutation({
@@ -71,6 +86,7 @@ export function Test({
                         [question.id]: e.target.value,
                       }))
                     }
+                    checked={responses[question.id] === option.id} // Check if the option is selected
                   />
                   <span className="ml-2">{option.option}</span>
                 </label>
