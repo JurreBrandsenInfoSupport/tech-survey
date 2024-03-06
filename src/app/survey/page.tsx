@@ -1,17 +1,32 @@
 import { api } from "~/trpc/server";
 import { Test } from "../_components/test";
 import { getServerAuthSession } from "~/server/auth";
+import { type AnswerOption, type Question } from "~/models/types";
 
 const SurveyPage: React.FC = async () => {
   const session = await getServerAuthSession();
 
-  // TODO: promise.all
+  if (!session) {
+    return <div>Unauthenticated</div>;
+  }
 
-  // Fetch survey questions from the API
-  const questions = await api.survey.getQuestions.query();
+  const [questions, answerOptions] = await Promise.all([
+    api.survey.getQuestions.query(),
+    api.survey.getAnswerOptions.query(),
+  ]);
 
-  // Fetch answer options from the API
-  const answerOptions = await api.survey.getAnswerOptions.query();
+  const formattedQuestions: Question[] = questions.map((question) => ({
+    id: question.id,
+    surveyId: question.surveyId,
+    questionText: question.questionText,
+  }));
+
+  const formattedAnswerOptions: AnswerOption[] = answerOptions.map(
+    (answerOption) => ({
+      id: answerOption.id,
+      option: answerOption.option,
+    }),
+  );
 
   return (
     <div className="p-4">
@@ -19,8 +34,8 @@ const SurveyPage: React.FC = async () => {
 
       <Test
         session={session}
-        questions={questions}
-        answerOptions={answerOptions}
+        questions={formattedQuestions}
+        answerOptions={formattedAnswerOptions}
       />
     </div>
   );

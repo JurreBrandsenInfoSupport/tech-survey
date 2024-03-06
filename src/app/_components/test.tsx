@@ -1,10 +1,11 @@
 "use client";
 
-import { type AnswerOption, type Question, type Session } from "next-auth";
+import { type AnswerOption, type Question } from "~/models/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
+import { type Session } from "next-auth";
 
 export function Test({
   session,
