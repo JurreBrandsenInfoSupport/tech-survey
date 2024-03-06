@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
 
-export function Test({
+export function SurveyQuestionnaire({
   session,
   questions,
   answerOptions,
@@ -43,7 +43,7 @@ export function Test({
     onSuccess: (data) => {
       console.log("Response submitted successfully"); // Debug console log
       console.log("Response data:", data); // Debug console log for response data
-      router.refresh();
+      // router.refresh();
       setResponses({});
     },
     onError: (error) => {

@@ -1,5 +1,5 @@
 import { api } from "~/trpc/server";
-import { Test } from "../_components/test";
+import { SurveyQuestionnaire } from "../_components/surveyQuestionnaire";
 import { getServerAuthSession } from "~/server/auth";
 import { type AnswerOption, type Question } from "~/models/types";
 
@@ -32,7 +32,7 @@ const SurveyPage: React.FC = async () => {
     <div className="p-4">
       <h1 className="mb-4 text-2xl font-bold">Survey</h1>
 
-      <Test
+      <SurveyQuestionnaire
         session={session}
         questions={formattedQuestions}
         answerOptions={formattedAnswerOptions}
