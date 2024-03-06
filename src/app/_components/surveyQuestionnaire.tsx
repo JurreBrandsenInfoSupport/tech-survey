@@ -43,7 +43,7 @@ export function SurveyQuestionnaire({
     onSuccess: (data) => {
       console.log("Response submitted successfully"); // Debug console log
       console.log("Response data:", data); // Debug console log for response data
-      // router.refresh();
+      router.refresh();
       setResponses({});
     },
     onError: (error) => {
