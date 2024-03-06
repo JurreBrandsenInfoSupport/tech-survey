@@ -2,22 +2,6 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const surveyRouter = createTRPCRouter({
-  getQuestionsWithUniqueAnswerOptionsPerDomain: publicProcedure.query(
-    async ({ ctx }) => {
-      const domains = await ctx.db.domain.findMany({
-        include: {
-          questions: {
-            select: {
-              id: true,
-              questionText: true,
-            },
-          },
-        },
-      });
-      return domains;
-    },
-  ),
-
   getQuestions: publicProcedure.query(async ({ ctx }) => {
     const questions = await ctx.db.question.findMany();
     // console.log("Questions:", questions); // Debug console log
