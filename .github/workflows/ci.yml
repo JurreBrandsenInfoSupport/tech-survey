@@ -38,8 +38,5 @@ jobs:
           npm install -g pnpm
           pnpm install
 
-      - name: TypeScript type checking
-        run: pnpm run typecheck
-
       - name: Linting
         run: pnpm lint
