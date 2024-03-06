@@ -1,6 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+
+// TODO: bindings configureren
 generator client {
   provider = "prisma-client-js"
 }
@@ -37,7 +39,7 @@ model Question {
 
 model AnswerOption {
   id             String           @id @default(cuid())
-  option         String
+  option         String // ints maken
   QuestionResult QuestionResult[]
 }
 

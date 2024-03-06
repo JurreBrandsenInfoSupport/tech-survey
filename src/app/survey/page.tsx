@@ -5,6 +5,8 @@ import { getServerAuthSession } from "~/server/auth";
 const SurveyPage: React.FC = async () => {
   const session = await getServerAuthSession();
 
+  // TODO: promise.all
+
   // Fetch survey questions from the API
   const questions = await api.survey.getQuestions.query();
 

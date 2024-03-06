@@ -24,6 +24,7 @@ export function Test({
   useEffect(() => {
     const savedResponses = localStorage.getItem("surveyResponses");
     if (savedResponses) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       setResponses(JSON.parse(savedResponses));
     }
   }, []);
@@ -35,6 +36,7 @@ export function Test({
     }
   }, [responses]);
 
+  // TODO: doe elke 5 seconden een autosave. (server side)
   // Mutation to submit user responses
   const submitResponse = api.survey.setQuestionResult.useMutation({
     onSuccess: (data) => {
