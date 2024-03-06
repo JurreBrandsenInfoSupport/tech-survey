@@ -18,7 +18,7 @@ export interface Question {
 
 export interface AnswerOption {
   id: string;
-  option: string;
+  option: number;
 }
 
 export interface QuestionResult {
