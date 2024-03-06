@@ -1,31 +1,27 @@
-interface Survey {
+export interface Survey {
   id: string;
   surveyName: string;
   questions: Question[];
 }
 
-interface Domain {
+export interface Domain {
   id: string;
   domain: string;
   questions: Question[];
 }
 
-interface Question {
+export interface Question {
   id: string;
   surveyId: string;
   questionText: string;
-  survey: Survey;
-  domains: Domain[];
-  QuestionResult: QuestionResult[];
 }
 
-interface AnswerOption {
+export interface AnswerOption {
   id: string;
   option: string;
-  QuestionResult: QuestionResult[];
 }
 
-interface QuestionResult {
+export interface QuestionResult {
   id: string;
   userId: string;
   questionId: string;
@@ -35,7 +31,7 @@ interface QuestionResult {
   answer: AnswerOption;
 }
 
-interface User {
+export interface User {
   id: string;
   // Add more properties as needed
 }
