@@ -4,13 +4,11 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 export const surveyRouter = createTRPCRouter({
   getQuestions: publicProcedure.query(async ({ ctx }) => {
     const questions = await ctx.db.question.findMany();
-    // console.log("Questions:", questions); // Debug console log
     return questions;
   }),
 
   getAnswerOptions: publicProcedure.query(async ({ ctx }) => {
     const answerOptions = await ctx.db.answerOption.findMany();
-    // console.log("Answer options:", answerOptions); // Debug console log
     return answerOptions;
   }),
 

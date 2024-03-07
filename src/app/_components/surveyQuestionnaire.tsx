@@ -1,15 +1,12 @@
 "use client";
 
-import {
-  type AnswerOption,
-  type Question,
-  answerMapping,
-} from "~/models/types";
+import { type AnswerOption, type Question } from "~/models/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
+import idToTextMap from "~/utils/optionMapping";
 
 export function SurveyQuestionnaire({
   session,
@@ -95,7 +92,7 @@ export function SurveyQuestionnaire({
                     }
                     checked={responses[question.id] === option.id} // Check if the option is selected
                   />
-                  <span className="ml-2">{answerMapping[option.option]}</span>
+                  <span className="ml-2">{idToTextMap[option.option]}</span>
                 </label>
               ))}
             </div>
