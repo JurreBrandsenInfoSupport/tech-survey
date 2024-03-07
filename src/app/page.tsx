@@ -1,58 +1,45 @@
 import { unstable_noStore as noStore } from "next/cache";
-import Link from "next/link";
 import { getServerAuthSession } from "~/server/auth";
+import { Login } from "./_components/login";
 
 export default async function Home() {
   noStore();
   const session = await getServerAuthSession();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-500 to-gray-900 text-white">
+      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+        <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl">
+          <span className="text-infoSupport">InfoSupport</span> Tech Survey
         </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          {/* <p className="text-2xl text-white">
-            {hello ? hello.greeting : "Loading tRPC query..."}
-          </p> */}
+        <div className="max-w-2xl text-center">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. An nisi
+            populari fama? An est aliquid per se ipsum flagitiosum, etiamsi
+            nulla comitetur infamia?{" "}
+            <i>
+              Quid turpius quam sapientis vitam ex insipientium sermone pendere?
+            </i>{" "}
+            Sextilio Rufo, cum is rem ad amicos ita deferret, se esse heredem Q.
+            Duo Reges: constructio interrete. Non quaeritur autem quid naturae
+            tuae consentaneum sit, sed quid disciplinae. Mene ergo et Triarium
+            dignos existimas, apud quos turpiter loquare? Scio enim esse
+            quosdam, qui quavis lingua philosophari possint;{" "}
+          </p>
 
-          <div className="flex flex-col items-center justify-center gap-4">
-            <p className="text-center text-2xl text-white">
-              {session && <span>Logged in as {session.user?.name}</span>}
-            </p>
-            <Link
-              href={session ? "/api/auth/signout" : "/api/auth/signin"}
-              className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-            >
-              {session ? "Sign out" : "Sign in"}
-            </Link>
-          </div>
+          <p>
+            Roges enim Aristonem, bonane ei videantur haec: vacuitas doloris,
+            divitiae, valitudo; Videamus animi partes, quarum est conspectus
+            illustrior; Idemne potest esse dies saepius, qui semel fuit? Nihil
+            ad rem! Ne sit sane; <b>Laboro autem non sine causa;</b> Quod autem
+            satis est, eo quicquid accessit, nimium est; Vitae autem degendae
+            ratio maxime quidem illis placuit quieta.{" "}
+            <b>Idemne, quod iucunde?</b> Neque enim disputari sine reprehensione
+            nec cum iracundia aut pertinacia recte disputari potest.{" "}
+            <i>Illud non continuo, ut aeque incontentae.</i>{" "}
+          </p>
         </div>
+        <Login session={session} />
       </div>
     </main>
   );
