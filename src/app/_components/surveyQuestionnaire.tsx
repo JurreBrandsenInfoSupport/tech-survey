@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "~/components/ui/button";
+
 import { type Role, type AnswerOption, type Question } from "~/models/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -99,61 +101,58 @@ export function SurveyQuestionnaire({
           ))}
         </ul>
       </div>
-      <div className="p-4">
-        <form
-          className="flex gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            // Mapping responses to an array of objects with questionId and answerId
-            const mappedResponses = Object.entries(responses).map(
-              ([questionId, answerId]) => ({
-                userId: session?.user.id,
-                questionId,
-                answerId,
-              }),
-            );
-            // Mutating responses for each question
-            mappedResponses.forEach((response) =>
-              submitResponse.mutate(response),
-            );
-          }}
-        >
-          {filteredQuestions?.map((question) => (
-            <div key={question.id} className="mb-4">
-              <h2 className="mb-2 text-lg font-semibold">
-                {question.questionText}
-              </h2>
-              <div className="flex flex-wrap">
-                {answerOptions.map((option) => (
-                  <label
-                    key={option.id}
-                    className="mb-2 mr-4 flex items-center"
-                  >
-                    <input
-                      type="radio"
-                      name={`question-${question.id}`}
-                      value={option.id}
-                      onChange={(e) =>
-                        setResponses((prevResponses) => ({
-                          ...prevResponses,
-                          [question.id]: e.target.value,
-                        }))
-                      }
-                      checked={responses[question.id] === option.id} // Check if the option is selected
-                    />
-                    <span className="ml-2">{idToTextMap[option.option]}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-          <button
-            type="submit"
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+      <div className="survey-section">
+        <div className="section-questions" id="section-questions">
+          <form
+            className="flex gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              // Mapping responses to an array of objects with questionId and answerId
+              const mappedResponses = Object.entries(responses).map(
+                ([questionId, answerId]) => ({
+                  userId: session?.user.id,
+                  questionId,
+                  answerId,
+                }),
+              );
+              // Mutating responses for each question
+              mappedResponses.forEach((response) =>
+                submitResponse.mutate(response),
+              );
+            }}
           >
-            Submit
-          </button>
-        </form>
+            {filteredQuestions?.map((question) => (
+              <div key={question.id} className="mb-4">
+                <h2 className="mb-2 text-lg font-semibold">
+                  {question.questionText}
+                </h2>
+                <div className="flex flex-wrap">
+                  {answerOptions.map((option) => (
+                    <label
+                      key={option.id}
+                      className="mb-2 mr-4 flex items-center"
+                    >
+                      <input
+                        type="radio"
+                        name={`question-${question.id}`}
+                        value={option.id}
+                        onChange={(e) =>
+                          setResponses((prevResponses) => ({
+                            ...prevResponses,
+                            [question.id]: e.target.value,
+                          }))
+                        }
+                        checked={responses[question.id] === option.id} // Check if the option is selected
+                      />
+                      <span className="ml-2">{idToTextMap[option.option]}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <Button type="submit">Submit</Button>
+          </form>
+        </div>
       </div>
     </div>
   );

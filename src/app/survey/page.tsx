@@ -2,7 +2,6 @@ import { api } from "~/trpc/server";
 import { SurveyQuestionnaire } from "../_components/surveyQuestionnaire";
 import { getServerAuthSession } from "~/server/auth";
 import { type AnswerOption, type Question } from "~/models/types";
-import { SelectRoles } from "../_components/selectRoles";
 
 const SurveyPage: React.FC = async () => {
   const session = await getServerAuthSession();
@@ -33,7 +32,7 @@ const SurveyPage: React.FC = async () => {
   );
 
   return (
-    <div className="p-4">
+    <div className="survey-layout flex">
       <SurveyQuestionnaire
         session={session}
         questions={formattedQuestions}
@@ -43,5 +42,4 @@ const SurveyPage: React.FC = async () => {
     </div>
   );
 };
-
 export default SurveyPage;
