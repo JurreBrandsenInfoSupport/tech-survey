@@ -1,9 +1,8 @@
-import { unstable_noStore as noStore } from "next/cache";
 import { getServerAuthSession } from "~/server/auth";
 import { Login } from "./_components/login";
+import Link from "next/link";
 
 export default async function Home() {
-  noStore();
   const session = await getServerAuthSession();
 
   return (
@@ -12,33 +11,36 @@ export default async function Home() {
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl">
           <span className="text-infoSupport">InfoSupport</span> Tech Survey
         </h1>
-        <div className="max-w-2xl text-center">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. An nisi
-            populari fama? An est aliquid per se ipsum flagitiosum, etiamsi
-            nulla comitetur infamia?{" "}
-            <i>
-              Quid turpius quam sapientis vitam ex insipientium sermone pendere?
-            </i>{" "}
-            Sextilio Rufo, cum is rem ad amicos ita deferret, se esse heredem Q.
-            Duo Reges: constructio interrete. Non quaeritur autem quid naturae
-            tuae consentaneum sit, sed quid disciplinae. Mene ergo et Triarium
-            dignos existimas, apud quos turpiter loquare? Scio enim esse
-            quosdam, qui quavis lingua philosophari possint;{" "}
-          </p>
+        {!session && (
+          <div className="max-w-2xl text-center">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. An nisi
+              populari fama? An est aliquid per se ipsum flagitiosum, etiamsi
+              nulla comitetur infamia?{" "}
+              <i>
+                Quid turpius quam sapientis vitam ex insipientium sermone
+                pendere?
+              </i>{" "}
+              Sextilio Rufo, cum is rem ad amicos ita deferret, se esse heredem
+              Q. Duo Reges: constructio interrete. Non quaeritur autem quid
+              naturae tuae consentaneum sit, sed quid disciplinae. Mene ergo et
+              Triarium dignos existimas, apud quos turpiter loquare? Scio enim
+              esse quosdam, qui quavis lingua philosophari possint;{" "}
+            </p>
+          </div>
+        )}
 
-          <p>
-            Roges enim Aristonem, bonane ei videantur haec: vacuitas doloris,
-            divitiae, valitudo; Videamus animi partes, quarum est conspectus
-            illustrior; Idemne potest esse dies saepius, qui semel fuit? Nihil
-            ad rem! Ne sit sane; <b>Laboro autem non sine causa;</b> Quod autem
-            satis est, eo quicquid accessit, nimium est; Vitae autem degendae
-            ratio maxime quidem illis placuit quieta.{" "}
-            <b>Idemne, quod iucunde?</b> Neque enim disputari sine reprehensione
-            nec cum iracundia aut pertinacia recte disputari potest.{" "}
-            <i>Illud non continuo, ut aeque incontentae.</i>{" "}
-          </p>
-        </div>
+        {/* If the user is logged in, show the selectRoles compoennt */}
+        {session && (
+          <Link
+            className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20"
+            href="/survey"
+            passHref
+          >
+            Go to survey
+          </Link>
+        )}
+
         <Login session={session} />
       </div>
     </main>
