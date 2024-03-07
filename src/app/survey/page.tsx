@@ -2,6 +2,7 @@ import { api } from "~/trpc/server";
 import { SurveyQuestionnaire } from "../_components/surveyQuestionnaire";
 import { getServerAuthSession } from "~/server/auth";
 import { type AnswerOption, type Question } from "~/models/types";
+import { SelectRoles } from "../_components/selectRoles";
 
 const SurveyPage: React.FC = async () => {
   const session = await getServerAuthSession();
@@ -9,6 +10,8 @@ const SurveyPage: React.FC = async () => {
   if (!session) {
     return <div>Unauthenticated</div>;
   }
+
+  const roles = await api.survey.getRoles.query();
 
   const [questions, answerOptions] = await Promise.all([
     api.survey.getQuestions.query(),
@@ -19,6 +22,7 @@ const SurveyPage: React.FC = async () => {
     id: question.id,
     surveyId: question.surveyId,
     questionText: question.questionText,
+    roleIds: question.roles.map((role) => role.id),
   }));
 
   const formattedAnswerOptions: AnswerOption[] = answerOptions.map(
@@ -30,12 +34,11 @@ const SurveyPage: React.FC = async () => {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl font-bold">Survey</h1>
-
       <SurveyQuestionnaire
         session={session}
         questions={formattedQuestions}
         answerOptions={formattedAnswerOptions}
+        roles={roles}
       />
     </div>
   );

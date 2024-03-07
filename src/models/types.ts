@@ -1,19 +1,19 @@
 export interface Survey {
   id: string;
   surveyName: string;
-  questions: Question[];
 }
 
-export interface Domain {
+export interface Role {
   id: string;
-  domain: string;
-  questions: Question[];
+  role: string;
 }
 
 export interface Question {
   id: string;
   surveyId: string;
   questionText: string;
+  roleIds: string[];
+  roles?: Role[];
 }
 
 export interface AnswerOption {
