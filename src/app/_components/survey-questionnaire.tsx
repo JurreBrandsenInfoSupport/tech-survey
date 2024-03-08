@@ -57,6 +57,7 @@ export function SurveyQuestionnaire({
     );
   }
 
+  const router = useRouter();
   const isMobile = isMobileDevice();
 
   // filter questions based on selected roles
@@ -64,8 +65,10 @@ export function SurveyQuestionnaire({
     question.roleIds.some((roleId) => selectedRoles.includes(roleId)),
   );
 
+  type QuestionSchema = Record<string, z.ZodEnum<[string, ...string[]]>>;
+
   const FormSchema = z.object(
-    filteredQuestions.reduce((schema, question) => {
+    filteredQuestions.reduce<QuestionSchema>((schema, question) => {
       // Add a validation rule for each question ID
       return {
         ...schema,
@@ -78,8 +81,6 @@ export function SurveyQuestionnaire({
       };
     }, {}),
   );
-
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
