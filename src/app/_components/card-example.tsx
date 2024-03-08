@@ -21,6 +21,17 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -156,49 +167,67 @@ export function RadioGroupForm({
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
         >
-          {filteredQuestions?.map((question) => (
-            <FormField
-              control={form.control}
-              name={question.id}
-              key={question.id}
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>{question.questionText}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={(value) => {
-                            field.onChange(value); // Update the form state with the selected value
-                            handleResponseSelection(question.id, value); // Update setResponses with the selected value
-                          }}
-                          value={field.value}
-                          className="flex flex-col space-y-1"
-                        >
-                          {answerOptions.map((option) => (
-                            <FormItem
-                              key={option.id}
-                              className="flex cursor-pointer items-center  space-x-3 space-y-0 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            >
-                              <FormControl>
-                                <RadioGroupItem value={option.id} />
-                              </FormControl>
-                              <FormLabel className="cursor-pointer">
-                                {idToTextMap[option.option]}
-                              </FormLabel>
-                            </FormItem>
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                    </CardContent>
-                  </Card>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px]">Question</TableHead>
+                {answerOptions.map((option) => (
+                  <TableHead key={option.id}>
+                    {idToTextMap[option.option]}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredQuestions?.map((question) => (
+                <TableRow key={question.id}>
+                  <TableCell>
+                    {question.questionText}
+                    {form.formState.errors[question.id] &&
+                      !form.getValues(question.id) && (
+                        <span className="text-red-500">
+                          {" "}
+                          -{" "}
+                          {form.formState.errors[question.id].message ||
+                          form.formState.errors[question.id].type === "required"
+                            ? `You need to select an answer for "${question.questionText}"`
+                            : ""}
+                        </span>
+                      )}
+                  </TableCell>
+                  {answerOptions.map((option) => (
+                    <TableCell key={option.id}>
+                      <FormItem>
+                        <FormControl>
+                          <RadioGroup
+                            {...form.register(question.id, {
+                              required: `You need to select an answer for "${question.questionText}"`,
+                            })}
+                            onValueChange={(value) => {
+                              form.setValue(question.id, value); // Update the form state with the selected value
+                              handleResponseSelection(question.id, value); // Update setResponses with the selected value
+                            }}
+                            value={form.getValues(question.id)}
+                            className="flex flex-col space-y-1"
+                          >
+                            <RadioGroupItem
+                              value={option.id}
+                              className={
+                                form.formState.errors[question.id] &&
+                                !form.getValues(question.id)
+                                  ? "border border-red-500"
+                                  : ""
+                              }
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
           <Button type="submit">Submit</Button>
         </form>
       </Form>
