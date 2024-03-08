@@ -1,8 +1,8 @@
 import { api } from "~/trpc/server";
-import { SurveyQuestionnaire } from "../_components/surveyQuestionnaire";
 import { getServerAuthSession } from "~/server/auth";
 import { type AnswerOption, type Question } from "~/models/types";
-import { SelectRoles } from "../_components/selectRoles";
+import { ModeToggle } from "../_components/mode-toggle";
+import { SurveyQuestionnaire } from "../_components/survey-questionnaire";
 
 const SurveyPage: React.FC = async () => {
   const session = await getServerAuthSession();
@@ -33,15 +33,19 @@ const SurveyPage: React.FC = async () => {
   );
 
   return (
-    <div className="p-4">
-      <SurveyQuestionnaire
-        session={session}
-        questions={formattedQuestions}
-        answerOptions={formattedAnswerOptions}
-        roles={roles}
-      />
-    </div>
+    <main className="relative flex min-h-screen items-center justify-center">
+      <div className="absolute right-4 top-4 z-50">
+        <ModeToggle />
+      </div>
+      <div className="container flex h-full flex-col items-center justify-center gap-12 px-4 py-16">
+        <SurveyQuestionnaire
+          session={session}
+          questions={formattedQuestions}
+          answerOptions={formattedAnswerOptions}
+          roles={roles}
+        />
+      </div>
+    </main>
   );
 };
-
 export default SurveyPage;
