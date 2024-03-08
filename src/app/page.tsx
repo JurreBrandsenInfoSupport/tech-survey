@@ -6,7 +6,7 @@ export default async function Home() {
   const session = await getServerAuthSession();
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-500 to-gray-900 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-800 to-gray-900 text-white">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl">
           <span className="text-infoSupport">InfoSupport</span> Tech Survey

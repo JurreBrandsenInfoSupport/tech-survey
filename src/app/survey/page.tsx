@@ -32,14 +32,16 @@ const SurveyPage: React.FC = async () => {
   );
 
   return (
-    <div className="survey-layout flex">
-      <SurveyQuestionnaire
-        session={session}
-        questions={formattedQuestions}
-        answerOptions={formattedAnswerOptions}
-        roles={roles}
-      />
-    </div>
+    <main className="flex min-h-screen items-center justify-center">
+      <div className="container flex h-full flex-col items-center justify-center gap-12 px-4 py-16">
+        <SurveyQuestionnaire
+          session={session}
+          questions={formattedQuestions}
+          answerOptions={formattedAnswerOptions}
+          roles={roles}
+        />
+      </div>
+    </main>
   );
 };
 export default SurveyPage;

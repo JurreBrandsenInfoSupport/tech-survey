@@ -10,6 +10,12 @@ import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
 import idToTextMap from "~/utils/optionMapping";
 
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Label } from "~/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+
+import { useToast } from "~/components/ui/use-toast";
+
 export function SurveyQuestionnaire({
   session,
   questions,
@@ -22,6 +28,7 @@ export function SurveyQuestionnaire({
   roles: Role[];
 }) {
   const router = useRouter();
+  const { toast } = useToast();
 
   // State to store user responses
   const [responses, setResponses] = useState<Record<string, string>>({});
@@ -101,36 +108,36 @@ export function SurveyQuestionnaire({
           ))}
         </ul>
       </div>
-      <div className="survey-section">
-        <div className="section-questions" id="section-questions">
-          <form
-            className="flex gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              // Mapping responses to an array of objects with questionId and answerId
-              const mappedResponses = Object.entries(responses).map(
-                ([questionId, answerId]) => ({
-                  userId: session?.user.id,
-                  questionId,
-                  answerId,
-                }),
-              );
-              // Mutating responses for each question
-              mappedResponses.forEach((response) =>
-                submitResponse.mutate(response),
-              );
-            }}
-          >
-            {filteredQuestions?.map((question) => (
-              <div key={question.id} className="mb-4">
-                <h2 className="mb-2 text-lg font-semibold">
-                  {question.questionText}
-                </h2>
-                <div className="flex flex-wrap">
+      <form
+        className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
+        onSubmit={(event) => {
+          event.preventDefault();
+          // Mapping responses to an array of objects with questionId and answerId
+          const mappedResponses = Object.entries(responses).map(
+            ([questionId, answerId]) => ({
+              userId: session?.user.id,
+              questionId,
+              answerId,
+            }),
+          );
+          // Mutating responses for each question
+          mappedResponses.forEach((response) =>
+            submitResponse.mutate(response),
+          );
+        }}
+      >
+        {filteredQuestions?.map((question) => (
+          <div key={question.id} className="mx-auto w-full">
+            <Card>
+              <CardHeader>
+                <CardTitle>{question.questionText}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup>
                   {answerOptions.map((option) => (
                     <label
                       key={option.id}
-                      className="mb-2 mr-4 flex items-center"
+                      className="flex cursor-pointer items-center space-x-2 rounded-lg p-2 hover:bg-gray-100"
                     >
                       <input
                         type="radio"
@@ -143,17 +150,34 @@ export function SurveyQuestionnaire({
                           }))
                         }
                         checked={responses[question.id] === option.id} // Check if the option is selected
+                        className="form-radio h-4 w-4 text-indigo-600"
                       />
-                      <span className="ml-2">{idToTextMap[option.option]}</span>
+                      <span className="text-gray-900">
+                        {idToTextMap[option.option]}
+                      </span>
                     </label>
                   ))}
-                </div>
-              </div>
-            ))}
-            <Button type="submit">Submit</Button>
-          </form>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+        <div className="col-span-full mt-4">
+          <Button
+            variant={"outline"}
+            type="submit"
+            className="w-full"
+            onClick={() => {
+              toast({
+                title: "Success!",
+                description: "Your responses have been submitted successfully",
+              });
+            }}
+          >
+            Submit
+          </Button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
