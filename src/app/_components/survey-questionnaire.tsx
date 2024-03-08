@@ -13,7 +13,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
-import { Form, FormControl, FormItem } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "~/components/ui/form";
 
 import {
   Table,
@@ -186,51 +192,40 @@ export function SurveyQuestionnaire({
             </TableHeader>
             <TableBody>
               {filteredQuestions?.map((question) => (
-                <TableRow key={question.id}>
-                  <TableCell>
-                    {question.questionText}
-                    {form.formState.errors[question.id] &&
-                      !form.getValues(question.id) && (
-                        <span className="text-red-500">
-                          {" "}
-                          -{" "}
-                          {form.formState.errors[question.id].message ||
-                          form.formState.errors[question.id].type === "required"
-                            ? `You need to select an answer for "${question.questionText}"`
-                            : ""}
-                        </span>
-                      )}
-                  </TableCell>
-                  {answerOptions.map((option) => (
-                    <TableCell key={option.id}>
-                      <FormItem>
-                        <FormControl>
-                          <RadioGroup
-                            {...form.register(question.id, {
-                              required: `You need to select an answer for "${question.questionText}"`,
-                            })}
-                            onValueChange={(value) => {
-                              form.setValue(question.id, value); // Update the form state with the selected value
-                              handleResponseSelection(question.id, value); // Update setResponses with the selected value
-                            }}
-                            value={form.getValues(question.id)}
-                            className="flex flex-col space-y-1"
-                          >
-                            <RadioGroupItem
-                              value={option.id}
-                              className={
-                                form.formState.errors[question.id] &&
-                                !form.getValues(question.id)
-                                  ? "border border-red-500"
-                                  : ""
-                              }
-                            />
-                          </RadioGroup>
-                        </FormControl>
-                      </FormItem>
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <FormField
+                  control={form.control}
+                  name={question.id}
+                  key={`${question.id}`}
+                  render={({ field }) => (
+                    <TableRow key={question.id}>
+                      <TableCell>
+                        {question.questionText}
+                        <FormMessage />
+                      </TableCell>
+
+                      {answerOptions.map((option) => (
+                        <TableCell key={option.id}>
+                          <FormItem>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  handleResponseSelection(question.id, value);
+                                }}
+                                value={field.value}
+                                className="flex flex-col space-y-1"
+                              >
+                                <FormControl>
+                                  <RadioGroupItem value={option.id} />
+                                </FormControl>
+                              </RadioGroup>
+                            </FormControl>
+                          </FormItem>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )}
+                />
               ))}
             </TableBody>
           </Table>
