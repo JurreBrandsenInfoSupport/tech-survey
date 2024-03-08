@@ -178,8 +178,8 @@ export function SurveyQuestionnaire({
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
         >
-          <Table>
-            <TableHeader>
+          <Table divClassname="">
+            <TableHeader className="sticky top-0 z-10 h-10 w-full bg-slate-100">
               <TableRow>
                 <TableHead className="w-[200px]">Question</TableHead>
                 {answerOptions.map((option) => (
@@ -216,9 +216,23 @@ export function SurveyQuestionnaire({
                                 value={field.value}
                                 className="flex flex-col space-y-1"
                               >
-                                <FormControl>
-                                  <RadioGroupItem value={option.id} />
-                                </FormControl>
+                                <label className="block cursor-pointer">
+                                  <FormControl>
+                                    <button
+                                      type="button"
+                                      className="h-full w-full focus:outline-none"
+                                      onClick={() => {
+                                        field.onChange(option.id);
+                                        handleResponseSelection(
+                                          question.id,
+                                          option.id,
+                                        );
+                                      }}
+                                    >
+                                      <RadioGroupItem value={option.id} />
+                                    </button>
+                                  </FormControl>
+                                </label>
                               </RadioGroup>
                             </FormControl>
                           </FormItem>
