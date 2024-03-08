@@ -33,9 +33,11 @@ const SurveyPage: React.FC = async () => {
   );
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="container flex h-full flex-col items-center justify-center gap-12 px-4 py-16">
+    <main className="relative flex min-h-screen items-center justify-center">
+      <div className="absolute right-4 top-4 z-50">
         <ModeToggle />
+      </div>
+      <div className="container flex h-full flex-col items-center justify-center gap-12 px-4 py-16">
         <SurveyQuestionnaire
           session={session}
           questions={formattedQuestions}

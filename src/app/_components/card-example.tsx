@@ -72,8 +72,19 @@ export function RadioGroupForm({
         answerId,
       }),
     );
+
+    if (mappedResponses.length === 0) {
+      toast({
+        title: "Error!",
+        description: "Please provide at least one response.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Mutating responses for each question
     mappedResponses.forEach((response) => submitResponse.mutate(response));
+
     toast({
       title: "Success!",
       description: "Your survey has been submitted.",
@@ -135,7 +146,7 @@ export function RadioGroupForm({
                 checked={selectedRoles.includes(role.id)}
                 onChange={() => handleRoleSelection(role.id)}
               />
-              <label>{role.role}</label>
+              <label className="cursor-pointer">{role.role}</label>
             </li>
           ))}
         </ul>
@@ -169,12 +180,12 @@ export function RadioGroupForm({
                           {answerOptions.map((option) => (
                             <FormItem
                               key={option.id}
-                              className="flex items-center space-x-3 space-y-0"
+                              className="flex cursor-pointer items-center  space-x-3 space-y-0 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
                               <FormControl>
                                 <RadioGroupItem value={option.id} />
                               </FormControl>
-                              <FormLabel className="font-normal">
+                              <FormLabel className="cursor-pointer">
                                 {idToTextMap[option.option]}
                               </FormLabel>
                             </FormItem>
