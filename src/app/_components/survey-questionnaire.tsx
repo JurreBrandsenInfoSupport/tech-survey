@@ -1,20 +1,31 @@
 "use client";
 
-import { Button } from "~/components/ui/button";
-
 import { type Role, type AnswerOption, type Question } from "~/models/types";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
-import idToTextMap from "~/utils/optionMapping";
+import { idToTextMap, idToTextMapMobile } from "~/utils/optionMapping";
 
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Label } from "~/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "~/components/ui/button";
+import { Form, FormControl, FormItem } from "~/components/ui/form";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-
-import { useToast } from "~/components/ui/use-toast";
+import { toast } from "~/components/ui/use-toast";
 
 export function SurveyQuestionnaire({
   session,
@@ -27,29 +38,73 @@ export function SurveyQuestionnaire({
   answerOptions: AnswerOption[];
   roles: Role[];
 }) {
-  const router = useRouter();
-  const { toast } = useToast();
-
-  // State to store user responses
   const [responses, setResponses] = useState<Record<string, string>>({});
-
-  // Load saved responses from local storage when component mounts
-  useEffect(() => {
-    const savedResponses = localStorage.getItem("surveyResponses");
-    if (savedResponses) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      setResponses(JSON.parse(savedResponses));
-    }
-  }, []);
-
-  // Save responses to local storage whenever it changes and there are responses
-  useEffect(() => {
-    if (Object.keys(responses).length > 0) {
-      localStorage.setItem("surveyResponses", JSON.stringify(responses));
-    }
-  }, [responses]);
-
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+
+  function isMobileDevice() {
+    if (typeof window === "undefined") {
+      return false; // Not running in a browser environment
+    }
+    const userAgent = window.navigator.userAgent;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent,
+    );
+  }
+
+  const isMobile = isMobileDevice();
+
+  // filter questions based on selected roles
+  const filteredQuestions = questions.filter((question) =>
+    question.roleIds.some((roleId) => selectedRoles.includes(roleId)),
+  );
+
+  const FormSchema = z.object(
+    filteredQuestions.reduce((schema, question) => {
+      // Add a validation rule for each question ID
+      return {
+        ...schema,
+        [question.id]: z.enum(
+          [question.id, ...answerOptions.map((option) => option.id)],
+          {
+            required_error: `You need to select an answer for "${question.questionText}"`,
+          },
+        ),
+      };
+    }, {}),
+  );
+
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
+
+  function onSubmit() {
+    const mappedResponses = Object.entries(responses).map(
+      ([questionId, answerId]) => ({
+        userId: session?.user.id,
+        questionId,
+        answerId,
+      }),
+    );
+
+    if (mappedResponses.length === 0) {
+      toast({
+        title: "Error!",
+        description: "Please provide at least one response.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Mutating responses for each question
+    mappedResponses.forEach((response) => submitResponse.mutate(response));
+
+    toast({
+      title: "Success!",
+      description: "Your survey has been submitted.",
+    });
+  }
 
   const toggleRole = (roleId: string) => {
     const index = selectedRoles.indexOf(roleId);
@@ -67,22 +122,25 @@ export function SurveyQuestionnaire({
     console.log("Selected Roles:", selectedRoles);
   };
 
-  // filter questions based on selected roles
-  const filteredQuestions = questions.filter((question) =>
-    question.roleIds.some((roleId) => selectedRoles.includes(roleId)),
-  );
+  const handleResponseSelection = (questionId: string, answerId: string) => {
+    console.log("Question ID:", questionId);
+    console.log("Answer ID:", answerId);
 
-  // TODO: doe elke 5 seconden een autosave. (server side)
-  // Mutation to submit user responses
+    setResponses((prevResponses) => ({
+      ...prevResponses,
+      [questionId]: answerId,
+    }));
+  };
+
   const submitResponse = api.survey.setQuestionResult.useMutation({
     onSuccess: (data) => {
-      console.log("Response submitted successfully"); // Debug console log
-      console.log("Response data:", data); // Debug console log for response data
+      console.log("Response submitted successfully");
+      console.log("Response data:", data);
       router.refresh();
       setResponses({});
     },
     onError: (error) => {
-      console.error("Error submitting response:", error); // Debug console log for errors
+      console.error("Error submitting response:", error);
     },
   });
 
@@ -103,81 +161,82 @@ export function SurveyQuestionnaire({
                 checked={selectedRoles.includes(role.id)}
                 onChange={() => handleRoleSelection(role.id)}
               />
-              <label>{role.role}</label>
+              <label className="cursor-pointer">{role.role}</label>
             </li>
           ))}
         </ul>
       </div>
-      <form
-        className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
-        onSubmit={(event) => {
-          event.preventDefault();
-          // Mapping responses to an array of objects with questionId and answerId
-          const mappedResponses = Object.entries(responses).map(
-            ([questionId, answerId]) => ({
-              userId: session?.user.id,
-              questionId,
-              answerId,
-            }),
-          );
-          // Mutating responses for each question
-          mappedResponses.forEach((response) =>
-            submitResponse.mutate(response),
-          );
-        }}
-      >
-        {filteredQuestions?.map((question) => (
-          <div key={question.id} className="mx-auto w-full">
-            <Card>
-              <CardHeader>
-                <CardTitle>{question.questionText}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px]">Question</TableHead>
+                {answerOptions.map((option) => (
+                  <TableHead key={option.id}>
+                    {isMobile
+                      ? idToTextMapMobile[option.option]
+                      : idToTextMap[option.option]}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredQuestions?.map((question) => (
+                <TableRow key={question.id}>
+                  <TableCell>
+                    {question.questionText}
+                    {form.formState.errors[question.id] &&
+                      !form.getValues(question.id) && (
+                        <span className="text-red-500">
+                          {" "}
+                          -{" "}
+                          {form.formState.errors[question.id].message ||
+                          form.formState.errors[question.id].type === "required"
+                            ? `You need to select an answer for "${question.questionText}"`
+                            : ""}
+                        </span>
+                      )}
+                  </TableCell>
                   {answerOptions.map((option) => (
-                    <label
-                      key={option.id}
-                      className="flex cursor-pointer items-center space-x-2 rounded-lg p-2 hover:bg-gray-100"
-                    >
-                      <input
-                        type="radio"
-                        name={`question-${question.id}`}
-                        value={option.id}
-                        onChange={(e) =>
-                          setResponses((prevResponses) => ({
-                            ...prevResponses,
-                            [question.id]: e.target.value,
-                          }))
-                        }
-                        checked={responses[question.id] === option.id} // Check if the option is selected
-                        className="form-radio h-4 w-4 text-indigo-600"
-                      />
-                      <span className="text-gray-900">
-                        {idToTextMap[option.option]}
-                      </span>
-                    </label>
+                    <TableCell key={option.id}>
+                      <FormItem>
+                        <FormControl>
+                          <RadioGroup
+                            {...form.register(question.id, {
+                              required: `You need to select an answer for "${question.questionText}"`,
+                            })}
+                            onValueChange={(value) => {
+                              form.setValue(question.id, value); // Update the form state with the selected value
+                              handleResponseSelection(question.id, value); // Update setResponses with the selected value
+                            }}
+                            value={form.getValues(question.id)}
+                            className="flex flex-col space-y-1"
+                          >
+                            <RadioGroupItem
+                              value={option.id}
+                              className={
+                                form.formState.errors[question.id] &&
+                                !form.getValues(question.id)
+                                  ? "border border-red-500"
+                                  : ""
+                              }
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    </TableCell>
                   ))}
-                </RadioGroup>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
-        <div className="col-span-full mt-4">
-          <Button
-            variant={"outline"}
-            type="submit"
-            className="w-full"
-            onClick={() => {
-              toast({
-                title: "Success!",
-                description: "Your responses have been submitted successfully",
-              });
-            }}
-          >
-            Submit
-          </Button>
-        </div>
-      </form>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
     </div>
   );
 }
