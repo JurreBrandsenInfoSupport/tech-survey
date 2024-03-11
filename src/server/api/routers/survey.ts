@@ -1,7 +1,45 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { type Role } from "~/models/types";
 
 export const surveyRouter = createTRPCRouter({
+  assignDefaultRole: protectedProcedure.mutation(async ({ ctx }) => {
+    const defaultRole = await ctx.db.role.findFirst({
+      where: {
+        default: true,
+      },
+    });
+
+    if (!defaultRole) {
+      throw new Error("Default role not found");
+    }
+
+    const users = await ctx.db.user.findMany({
+      where: {
+        roles: {
+          none: {
+            id: defaultRole.id,
+          },
+        },
+      },
+    });
+
+    for (const user of users) {
+      await ctx.db.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          roles: {
+            connect: {
+              id: defaultRole.id,
+            },
+          },
+        },
+      });
+    }
+  }),
+
   getQuestions: publicProcedure.query(async ({ ctx }) => {
     // get all questions and also the roles associated with each question
     const questions = await ctx.db.question.findMany({
@@ -21,6 +59,25 @@ export const surveyRouter = createTRPCRouter({
     const roles = await ctx.db.role.findMany();
     return roles;
   }),
+
+  getUserSelectedRoles: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+        include: {
+          roles: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      return user.roles as Role[];
+    }),
 
   setRole: protectedProcedure
     .input(z.object({ userId: z.string(), roleIds: z.array(z.string()) }))

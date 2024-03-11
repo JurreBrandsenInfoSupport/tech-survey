@@ -18,6 +18,7 @@ model Role {
   role      String
   questions Question[] @relation("QuestionToRole")
   users     User[]     @relation("UserRole")
+  default   Boolean    @default(false)
 }
 
 model Question {
