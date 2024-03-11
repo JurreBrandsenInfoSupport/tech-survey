@@ -3,6 +3,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { type AnswerOption, type Question } from "~/models/types";
 import { ModeToggle } from "../_components/mode-toggle";
 import { SurveyQuestionnaire } from "../_components/survey-questionnaire";
+import { Login } from "../_components/login";
 
 const SurveyPage: React.FC = async () => {
   const session = await getServerAuthSession();
@@ -11,11 +12,10 @@ const SurveyPage: React.FC = async () => {
     return <div>Unauthenticated</div>;
   }
 
-  const roles = await api.survey.getRoles.query();
-
-  const [questions, answerOptions] = await Promise.all([
+  const [questions, answerOptions, userSelectedRoles] = await Promise.all([
     api.survey.getQuestions.query(),
     api.survey.getAnswerOptions.query(),
+    api.survey.getUserSelectedRoles.query({ userId: session.user.id }),
   ]);
 
   const formattedQuestions: Question[] = questions.map((question) => ({
@@ -33,8 +33,9 @@ const SurveyPage: React.FC = async () => {
   );
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center">
-      <div className="absolute right-4 top-4 z-50">
+    <main className="flex min-h-screen items-center justify-center">
+      <div className="absolute right-4 top-4 z-50 flex items-center space-x-4">
+        {session && <Login session={session} />}
         <ModeToggle />
       </div>
       <div className="container flex h-full flex-col items-center justify-center gap-12 px-4 py-16">
@@ -42,7 +43,7 @@ const SurveyPage: React.FC = async () => {
           session={session}
           questions={formattedQuestions}
           answerOptions={formattedAnswerOptions}
-          roles={roles}
+          userSelectedRoles={userSelectedRoles}
         />
       </div>
     </main>

@@ -2,30 +2,23 @@
 
 import { type Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
+import { Button } from "~/components/ui/button";
 
 export function Login({ session }: { session?: Session | null }) {
   if (!session) {
     return (
       <div className="flex flex-col items-center gap-6">
-        <button
-          onClick={() => signIn("azure-ad")}
-          className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20"
-        >
-          Sign in
-        </button>
+        <Button onClick={() => signIn("azure-ad")}>Sign in</Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <p className="text-xl">Logged in as {session.user?.name}</p>
-      <button
-        onClick={() => signOut()}
-        className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20"
-      >
+    <div className="flex items-center">
+      <p>Logged in as {session.user?.name}</p>
+      <Button className="ml-2" onClick={() => signOut({ callbackUrl: "/" })}>
         Sign out
-      </button>
+      </Button>
     </div>
   );
 }
