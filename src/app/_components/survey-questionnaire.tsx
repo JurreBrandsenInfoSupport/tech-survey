@@ -1,7 +1,7 @@
 "use client";
 
 import { type Role, type AnswerOption, type Question } from "~/models/types";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, notFound } from "next/navigation";
 import { useState } from "react";
 
 import { api } from "~/trpc/react";
@@ -32,6 +32,9 @@ import {
 
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
+import { slugToId, slugify } from "~/utils/slugify";
+import Link from "next/link";
+import Navigation from "./navigation";
 
 export function SurveyQuestionnaire({
   session,
@@ -49,6 +52,23 @@ export function SurveyQuestionnaire({
     userSelectedRoles.map((role) => role.id),
   );
 
+  const pathname = usePathname() || "";
+
+  // get the current role from the url, which is /survey/[role]
+  const currentRole = pathname.split("/").pop() ?? "";
+  if (!slugToId[currentRole]) {
+    notFound();
+  }
+
+  console.log("Selected roles:", selectedRoles);
+
+  const filteredQuestions = questions.filter(
+    (question) =>
+      question.roleIds.some(
+        (roleId) => roleId === slugToId[currentRole ?? ""],
+      ) && selectedRoles.includes(slugToId[currentRole ?? ""] ?? ""),
+  );
+
   function isMobileDevice() {
     if (typeof window === "undefined") {
       return false; // Not running in a browser environment
@@ -61,11 +81,6 @@ export function SurveyQuestionnaire({
 
   const router = useRouter();
   const isMobile = isMobileDevice();
-
-  // filter questions based on selected roles
-  const filteredQuestions = questions.filter((question) =>
-    question.roleIds.some((roleId) => selectedRoles.includes(roleId)),
-  );
 
   const handleResponseSelection = (questionId: string, answerId: string) => {
     console.log("Question ID:", questionId);
@@ -137,8 +152,31 @@ export function SurveyQuestionnaire({
     },
   });
 
+  const sections = userSelectedRoles
+    .sort((a, b) => {
+      const roleA = a.role.toLowerCase();
+      const roleB = b.role.toLowerCase();
+
+      if (roleA === "general") return -1;
+      if (roleB === "general") return 1;
+
+      return 0;
+    })
+    .map((role) => ({
+      id: role.id,
+      href: `/survey/${slugify(role.role)}`,
+      label: role.role,
+      current: role.role === currentRole,
+      completed: true,
+    }));
+
+  console.log("Sections:", sections);
+
   return (
     <div>
+      <div>
+        <Navigation sections={sections} />
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -182,21 +220,19 @@ export function SurveyQuestionnaire({
                                 value={field.value}
                                 className="flex flex-col space-y-1"
                               >
-                                <label className="block cursor-pointer">
+                                <label className="flex cursor-pointer items-center justify-center">
                                   <FormControl>
-                                    <button
-                                      type="button"
-                                      className="h-full w-full focus:outline-none"
-                                      onClick={() => {
+                                    <RadioGroupItem
+                                      value={option.id}
+                                      onChange={() => {
                                         field.onChange(option.id);
                                         handleResponseSelection(
                                           question.id,
                                           option.id,
                                         );
                                       }}
-                                    >
-                                      <RadioGroupItem value={option.id} />
-                                    </button>
+                                      checked={field.value === option.id}
+                                    />
                                   </FormControl>
                                 </label>
                               </RadioGroup>
