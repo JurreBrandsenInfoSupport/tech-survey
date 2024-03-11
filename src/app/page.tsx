@@ -65,7 +65,7 @@ const Home: React.FC = async () => {
               roles={roles}
               userSelectedRoles={userSelectedRoles}
             />
-            <Link href="/survey" passHref>
+            <Link href="/survey/general" passHref>
               <Button>{">"} Go to survey</Button>
             </Link>
           </div>

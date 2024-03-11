@@ -34,6 +34,7 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
 import Link from "next/link";
+import Navigation from "./navigation";
 
 export function SurveyQuestionnaire({
   session,
@@ -151,14 +152,31 @@ export function SurveyQuestionnaire({
     },
   });
 
+  const sections = userSelectedRoles
+    .sort((a, b) => {
+      const roleA = a.role.toLowerCase();
+      const roleB = b.role.toLowerCase();
+
+      if (roleA === "general") return -1;
+      if (roleB === "general") return 1;
+
+      return 0;
+    })
+    .map((role) => ({
+      id: role.id,
+      href: `/survey/${slugify(role.role)}`,
+      label: role.role,
+      current: role.role === currentRole,
+      completed: true,
+    }));
+
+  console.log("Sections:", sections);
+
   return (
     <div>
-      <h1>Survey for {currentRole}</h1>
-      {userSelectedRoles.map((role) => (
-        <Link href={`/survey/${slugify(role.role)}`} key={role.id}>
-          <p key={role.id}>{role.role}</p>
-        </Link>
-      ))}
+      <div>
+        <Navigation sections={sections} />
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
