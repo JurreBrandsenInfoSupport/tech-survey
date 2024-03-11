@@ -146,16 +146,14 @@ export function SurveyQuestionnaire({
         >
           <Table divClassname="">
             <TableHeader className="sticky top-0 z-10 h-10 w-full">
-              <TableRow>
-                <TableHead className="w-[200px]">Question</TableHead>
-                {answerOptions.map((option) => (
-                  <TableHead key={option.id}>
-                    {isMobile
-                      ? idToTextMapMobile[option.option]
-                      : idToTextMap[option.option]}
-                  </TableHead>
-                ))}
-              </TableRow>
+              <TableHead className="w-[200px]">Question</TableHead>
+              {answerOptions.map((option) => (
+                <TableHead key={option.id}>
+                  {isMobile
+                    ? idToTextMapMobile[option.option]
+                    : idToTextMap[option.option]}
+                </TableHead>
+              ))}
             </TableHeader>
             <TableBody>
               {filteredQuestions?.map((question) => (
@@ -184,19 +182,17 @@ export function SurveyQuestionnaire({
                               >
                                 <label className="block cursor-pointer">
                                   <FormControl>
-                                    <button
-                                      type="button"
-                                      className="h-full w-full focus:outline-none"
-                                      onClick={() => {
+                                    <RadioGroupItem
+                                      value={option.id}
+                                      onChange={() => {
                                         field.onChange(option.id);
                                         handleResponseSelection(
                                           question.id,
                                           option.id,
                                         );
                                       }}
-                                    >
-                                      <RadioGroupItem value={option.id} />
-                                    </button>
+                                      checked={field.value === option.id}
+                                    />
                                   </FormControl>
                                 </label>
                               </RadioGroup>
