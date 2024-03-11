@@ -1,7 +1,7 @@
 "use client";
 
 import { type Role, type AnswerOption, type Question } from "~/models/types";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { api } from "~/trpc/react";
@@ -32,6 +32,8 @@ import {
 
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
+import { slugToId, slugify } from "~/utils/slugify";
+import Link from "next/link";
 
 export function SurveyQuestionnaire({
   session,
@@ -44,9 +46,22 @@ export function SurveyQuestionnaire({
   answerOptions: AnswerOption[];
   userSelectedRoles: Role[];
 }) {
+  const pathname = usePathname() || "";
+
+  // get the current role from the url, which is /survey/[role]
+  const currentRole = pathname.split("/").pop() ?? "";
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [selectedRoles] = useState<string[]>(
     userSelectedRoles.map((role) => role.id),
+  );
+
+  console.log("Selected roles:", selectedRoles);
+
+  const filteredQuestions = questions.filter(
+    (question) =>
+      question.roleIds.some(
+        (roleId) => roleId === slugToId[currentRole ?? ""],
+      ) && selectedRoles.includes(slugToId[currentRole ?? ""] ?? ""),
   );
 
   function isMobileDevice() {
@@ -61,11 +76,6 @@ export function SurveyQuestionnaire({
 
   const router = useRouter();
   const isMobile = isMobileDevice();
-
-  // filter questions based on selected roles
-  const filteredQuestions = questions.filter((question) =>
-    question.roleIds.some((roleId) => selectedRoles.includes(roleId)),
-  );
 
   const handleResponseSelection = (questionId: string, answerId: string) => {
     console.log("Question ID:", questionId);
@@ -139,6 +149,12 @@ export function SurveyQuestionnaire({
 
   return (
     <div>
+      <h1>Survey for {currentRole}</h1>
+      {userSelectedRoles.map((role) => (
+        <Link href={`/survey/${slugify(role.role)}`} key={role.id}>
+          <p key={role.id}>{role.role}</p>
+        </Link>
+      ))}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -146,14 +162,16 @@ export function SurveyQuestionnaire({
         >
           <Table divClassname="">
             <TableHeader className="sticky top-0 z-10 h-10 w-full">
-              <TableHead className="w-[200px]">Question</TableHead>
-              {answerOptions.map((option) => (
-                <TableHead key={option.id}>
-                  {isMobile
-                    ? idToTextMapMobile[option.option]
-                    : idToTextMap[option.option]}
-                </TableHead>
-              ))}
+              <TableRow>
+                <TableHead className="w-[200px]">Question</TableHead>
+                {answerOptions.map((option) => (
+                  <TableHead key={option.id}>
+                    {isMobile
+                      ? idToTextMapMobile[option.option]
+                      : idToTextMap[option.option]}
+                  </TableHead>
+                ))}
+              </TableRow>
             </TableHeader>
             <TableBody>
               {filteredQuestions?.map((question) => (
@@ -180,7 +198,7 @@ export function SurveyQuestionnaire({
                                 value={field.value}
                                 className="flex flex-col space-y-1"
                               >
-                                <label className="block cursor-pointer">
+                                <label className="flex cursor-pointer items-center justify-center">
                                   <FormControl>
                                     <RadioGroupItem
                                       value={option.id}
