@@ -1,13 +1,10 @@
-// components/Navigation.js
 import Link from "next/link";
 import { Fragment } from "react";
 
-const Navigation = ({ sections }: { sections: any[] }) => {
-  const totalSections = sections.length;
-  const completedSections = sections.filter(
-    (section) => section.completed,
-  ).length;
-  const progressPercentage = (completedSections / totalSections) * 100;
+const ProgressionBar = ({ roles }: { roles: any[] }) => {
+  const totalroles = roles.length;
+  const completedroles = roles.filter((section) => section.completed).length;
+  const progressPercentage = (completedroles / totalroles) * 100;
 
   return (
     <nav className="relative mt-8 p-4" style={{ padding: "100px 40px 40px" }}>
@@ -15,11 +12,10 @@ const Navigation = ({ sections }: { sections: any[] }) => {
         {/* Progress bar */}
         <div
           className="flex items-center justify-between"
-          style={{ width: "75%" }}
+          style={{ width: "90%" }}
         >
           {" "}
-          {/* Set width to 75% */}
-          {sections.map((section, index) => (
+          {roles.map((section, index) => (
             <Fragment key={section.id}>
               {/* Circle with clickable area */}
               <Link
@@ -41,9 +37,9 @@ const Navigation = ({ sections }: { sections: any[] }) => {
                 </div>
               </Link>
               {/* Line (except for the last section) */}
-              {index !== sections.length - 1 && (
+              {index !== roles.length - 1 && (
                 <div
-                  className={`mx-2 h-0.5 flex-1 ${section.completed && sections[index + 1].completed ? "bg-green-500" : "bg-gray-300"}`}
+                  className={`mx-2 h-0.5 flex-1 ${section.completed && roles[index + 1].completed ? "bg-green-500" : "bg-gray-300"}`}
                 ></div>
               )}
             </Fragment>
@@ -58,4 +54,4 @@ const Navigation = ({ sections }: { sections: any[] }) => {
   );
 };
 
-export default Navigation;
+export default ProgressionBar;
