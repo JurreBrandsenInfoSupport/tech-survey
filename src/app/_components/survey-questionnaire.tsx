@@ -1,7 +1,7 @@
 "use client";
 
 import { type Role, type AnswerOption, type Question } from "~/models/types";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, notFound } from "next/navigation";
 import { useState } from "react";
 
 import { api } from "~/trpc/react";
@@ -46,14 +46,18 @@ export function SurveyQuestionnaire({
   answerOptions: AnswerOption[];
   userSelectedRoles: Role[];
 }) {
-  const pathname = usePathname() || "";
-
-  // get the current role from the url, which is /survey/[role]
-  const currentRole = pathname.split("/").pop() ?? "";
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [selectedRoles] = useState<string[]>(
     userSelectedRoles.map((role) => role.id),
   );
+
+  const pathname = usePathname() || "";
+
+  // get the current role from the url, which is /survey/[role]
+  const currentRole = pathname.split("/").pop() ?? "";
+  if (!slugToId[currentRole]) {
+    notFound();
+  }
 
   console.log("Selected roles:", selectedRoles);
 
