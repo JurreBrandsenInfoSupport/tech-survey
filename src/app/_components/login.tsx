@@ -14,9 +14,11 @@ export function Login({ session }: { session?: Session | null }) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <p className="text-xl">Logged in as {session.user?.name}</p>
-      <Button onClick={() => signOut()}>Sign out</Button>
+    <div className="flex items-center">
+      <p>Logged in as {session.user?.name}</p>
+      <Button className="ml-2" onClick={() => signOut({ callbackUrl: "/" })}>
+        Sign out
+      </Button>
     </div>
   );
 }

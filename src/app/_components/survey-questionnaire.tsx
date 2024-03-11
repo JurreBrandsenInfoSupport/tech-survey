@@ -145,7 +145,7 @@ export function SurveyQuestionnaire({
           className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
         >
           <Table divClassname="">
-            <TableHeader className="sticky top-0 z-10 h-10 w-full bg-slate-100">
+            <TableHeader className="sticky top-0 z-10 h-10 w-full">
               <TableRow>
                 <TableHead className="w-[200px]">Question</TableHead>
                 {answerOptions.map((option) => (

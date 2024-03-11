@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
 import { type Role } from "~/models/types";
@@ -8,11 +8,18 @@ import { type Role } from "~/models/types";
 export default function SelectRoles({
   session,
   roles,
+  userSelectedRoles,
 }: {
   session: Session;
   roles: Role[];
+  userSelectedRoles: Role[];
 }) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+
+  useEffect(() => {
+    setSelectedRoles(userSelectedRoles.map((role) => role.id));
+  }, [userSelectedRoles]);
+
   const setRolesMutation = api.survey.setRole.useMutation();
 
   const handleRoleToggle = (roleId: string) => {
@@ -40,8 +47,12 @@ export default function SelectRoles({
         {roles.map((role) => (
           <li
             key={role.id}
-            className={`rounded-lg border p-4 hover:bg-gray-100 hover:bg-opacity-25 ${role.default ? "" : "cursor-pointer"}`}
-            onClick={() => !role.default && handleRoleToggle(role.id)} // Add a check to prevent toggling for default roles
+            className={`rounded-lg border p-4 hover:bg-gray-100 hover:bg-opacity-25 ${
+              role.default ? "" : "cursor-pointer"
+            }`}
+            onClick={
+              () => !role.default && handleRoleToggle(role.id) // Add a check to prevent toggling for default roles
+            }
           >
             <input
               type="checkbox"
