@@ -11,9 +11,10 @@ const SurveyPage: React.FC = async () => {
     return <div>Unauthenticated</div>;
   }
 
-  const [questions, answerOptions] = await Promise.all([
+  const [questions, answerOptions, userSelectedRoles] = await Promise.all([
     api.survey.getQuestions.query(),
     api.survey.getAnswerOptions.query(),
+    api.survey.getUserSelectedRoles.query({ userId: session.user.id }),
   ]);
 
   const formattedQuestions: Question[] = questions.map((question) => ({
@@ -40,6 +41,7 @@ const SurveyPage: React.FC = async () => {
           session={session}
           questions={formattedQuestions}
           answerOptions={formattedAnswerOptions}
+          userSelectedRoles={userSelectedRoles}
         />
       </div>
     </main>

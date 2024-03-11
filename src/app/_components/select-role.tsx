@@ -40,16 +40,22 @@ export default function SelectRoles({
         {roles.map((role) => (
           <li
             key={role.id}
-            className="cursor-pointer rounded-lg border p-4 hover:bg-gray-100 hover:bg-opacity-25"
-            onClick={() => handleRoleToggle(role.id)}
+            className={`rounded-lg border p-4 hover:bg-gray-100 hover:bg-opacity-25 ${role.default ? "" : "cursor-pointer"}`}
+            onClick={() => !role.default && handleRoleToggle(role.id)} // Add a check to prevent toggling for default roles
           >
             <input
               type="checkbox"
               className="mr-2 cursor-pointer"
-              checked={selectedRoles.includes(role.id)} // Check if role is selected
-              onChange={() => handleRoleToggle(role.id)} // Call handleRoleToggle on change
+              checked={role.default || selectedRoles.includes(role.id)}
+              onChange={() => handleRoleToggle(role.id)}
+              disabled={role.default}
             />
-            <label className="cursor-pointer">{role.role}</label>
+            <label
+              className={role.default ? "" : "cursor-pointer"}
+              style={{ color: role.default ? "#999" : "inherit" }}
+            >
+              {role.role}
+            </label>
           </li>
         ))}
       </ul>

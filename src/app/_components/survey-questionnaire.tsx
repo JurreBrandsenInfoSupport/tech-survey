@@ -1,6 +1,6 @@
 "use client";
 
-import { type AnswerOption, type Question } from "~/models/types";
+import { type Role, type AnswerOption, type Question } from "~/models/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -37,12 +37,17 @@ export function SurveyQuestionnaire({
   session,
   questions,
   answerOptions,
+  userSelectedRoles,
 }: {
   session: Session;
   questions: Question[];
   answerOptions: AnswerOption[];
+  userSelectedRoles: Role[];
 }) {
   const [responses, setResponses] = useState<Record<string, string>>({});
+  const [selectedRoles] = useState<string[]>(
+    userSelectedRoles.map((role) => role.id),
+  );
 
   function isMobileDevice() {
     if (typeof window === "undefined") {

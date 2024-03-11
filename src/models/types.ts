@@ -6,6 +6,7 @@ export interface Survey {
 export interface Role {
   id: string;
   role: string;
+  default: boolean;
 }
 
 export interface Question {

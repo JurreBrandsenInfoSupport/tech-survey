@@ -47,7 +47,7 @@ const Home: React.FC = async () => {
               href="/survey"
               passHref
             >
-              Go to survey
+              {">"} Go to survey
             </Link>
           </div>
         )}
