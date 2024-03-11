@@ -17,6 +17,7 @@ model Role {
   id        String     @id @default(cuid())
   role      String
   questions Question[] @relation("QuestionToRole")
+  users     User[]     @relation("UserRole")
 }
 
 model Question {
@@ -50,6 +51,7 @@ model User {
   email           String?          @unique
   emailVerified   DateTime?
   image           String?
+  roles           Role[]           @relation("UserRole")
   accounts        Account[]
   questionResults QuestionResult[]
   sessions        Session[]

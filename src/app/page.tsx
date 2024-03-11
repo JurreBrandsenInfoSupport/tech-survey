@@ -1,12 +1,20 @@
 import { getServerAuthSession } from "~/server/auth";
 import { Login } from "./_components/login";
-import Link from "next/link";
 
-export default async function Home() {
+import Link from "next/link";
+import SelectRole from "./_components/select-role";
+import { ModeToggle } from "./_components/mode-toggle";
+import { api } from "~/trpc/server";
+
+const Home: React.FC = async () => {
   const session = await getServerAuthSession();
+  const roles = await api.survey.getRoles.query();
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-800 to-gray-900 text-white">
+    <main className="flex min-h-screen items-center justify-center">
+      <div className="absolute right-4 top-4 z-50">
+        <ModeToggle />
+      </div>
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl">
           <span className="text-infoSupport">InfoSupport</span> Tech Survey
@@ -32,17 +40,21 @@ export default async function Home() {
 
         {/* If the user is logged in, show the selectRoles compoennt */}
         {session && (
-          <Link
-            className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20"
-            href="/survey"
-            passHref
-          >
-            Go to survey
-          </Link>
+          <div>
+            <SelectRole session={session} roles={roles} />
+            <Link
+              className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20"
+              href="/survey"
+              passHref
+            >
+              Go to survey
+            </Link>
+          </div>
         )}
 
         <Login session={session} />
       </div>
     </main>
   );
-}
+};
+export default Home;
