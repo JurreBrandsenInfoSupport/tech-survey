@@ -33,8 +33,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
-import Link from "next/link";
-import Navigation from "./navigation";
+
+import Navigation from "./progression-bar";
 
 export function SurveyQuestionnaire({
   session,
@@ -152,7 +152,7 @@ export function SurveyQuestionnaire({
     },
   });
 
-  const sections = userSelectedRoles
+  const selectedRolesForProgressBar = userSelectedRoles
     .sort((a, b) => {
       const roleA = a.role.toLowerCase();
       const roleB = b.role.toLowerCase();
@@ -170,12 +170,12 @@ export function SurveyQuestionnaire({
       completed: true,
     }));
 
-  console.log("Sections:", sections);
+  console.log("Sections:", selectedRolesForProgressBar);
 
   return (
     <div>
       <div>
-        <Navigation sections={sections} />
+        <Navigation roles={selectedRolesForProgressBar} />
       </div>
       <Form {...form}>
         <form

@@ -1,0 +1,1415 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 16.2 (Debian 16.2-1.pgdg120+2)
+-- Dumped by pg_dump version 16.2 (Debian 16.2-1.pgdg120+2)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS '';
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: Account; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Account" (
+    id text NOT NULL,
+    "userId" text NOT NULL,
+    type text NOT NULL,
+    provider text NOT NULL,
+    "providerAccountId" text NOT NULL,
+    refresh_token text,
+    access_token text,
+    expires_at integer,
+    ext_expires_in integer,
+    token_type text,
+    scope text,
+    id_token text,
+    session_state text
+);
+
+
+ALTER TABLE public."Account" OWNER TO postgres;
+
+--
+-- Name: AnswerOption; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."AnswerOption" (
+    id text NOT NULL,
+    option integer NOT NULL
+);
+
+
+ALTER TABLE public."AnswerOption" OWNER TO postgres;
+
+--
+-- Name: Question; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Question" (
+    id text NOT NULL,
+    "surveyId" text NOT NULL,
+    "questionText" text NOT NULL
+);
+
+
+ALTER TABLE public."Question" OWNER TO postgres;
+
+--
+-- Name: QuestionResult; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."QuestionResult" (
+    id text NOT NULL,
+    "userId" text NOT NULL,
+    "questionId" text NOT NULL,
+    "answerId" text NOT NULL
+);
+
+
+ALTER TABLE public."QuestionResult" OWNER TO postgres;
+
+--
+-- Name: Role; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Role" (
+    id text NOT NULL,
+    role text NOT NULL,
+    "default" boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public."Role" OWNER TO postgres;
+
+--
+-- Name: Session; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Session" (
+    id text NOT NULL,
+    "sessionToken" text NOT NULL,
+    "userId" text NOT NULL,
+    expires timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."Session" OWNER TO postgres;
+
+--
+-- Name: Survey; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Survey" (
+    id text NOT NULL,
+    "surveyName" text NOT NULL
+);
+
+
+ALTER TABLE public."Survey" OWNER TO postgres;
+
+--
+-- Name: User; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."User" (
+    id text NOT NULL,
+    name text,
+    email text,
+    "emailVerified" timestamp(3) without time zone,
+    image text
+);
+
+
+ALTER TABLE public."User" OWNER TO postgres;
+
+--
+-- Name: VerificationToken; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."VerificationToken" (
+    identifier text NOT NULL,
+    token text NOT NULL,
+    expires timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."VerificationToken" OWNER TO postgres;
+
+--
+-- Name: _QuestionToRole; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."_QuestionToRole" (
+    "A" text NOT NULL,
+    "B" text NOT NULL
+);
+
+
+ALTER TABLE public."_QuestionToRole" OWNER TO postgres;
+
+--
+-- Name: _UserRole; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."_UserRole" (
+    "A" text NOT NULL,
+    "B" text NOT NULL
+);
+
+
+ALTER TABLE public."_UserRole" OWNER TO postgres;
+
+--
+-- Name: _prisma_migrations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public._prisma_migrations (
+    id character varying(36) NOT NULL,
+    checksum character varying(64) NOT NULL,
+    finished_at timestamp with time zone,
+    migration_name character varying(255) NOT NULL,
+    logs text,
+    rolled_back_at timestamp with time zone,
+    started_at timestamp with time zone DEFAULT now() NOT NULL,
+    applied_steps_count integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public._prisma_migrations OWNER TO postgres;
+
+--
+-- Data for Name: Account; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Account" (id, "userId", type, provider, "providerAccountId", refresh_token, access_token, expires_at, ext_expires_in, token_type, scope, id_token, session_state) FROM stdin;
+cltfmpxam00027rq0m2eu033g	cltfmpxah00007rq0y6ikmmuu	oauth	azure-ad	_n6RCcCfe5kqgRkHMIOxMD9scWkUENVG2KdRYwZifeA	\N	eyJ0eXAiOiJKV1QiLCJub25jZSI6IkZEWmZmanZFY2MxMDNZTjFLSXk2SWV0OXNwRUp0VjVTUkxpUkdHUWZURUUiLCJhbGciOiJSUzI1NiIsIng1dCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSIsImtpZCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8xMTY3N2Q4NS0yZGNiLTQ0OTUtOTA5My02OTY0MjJhMTAzYTcvIiwiaWF0IjoxNzA5NzE4OTg3LCJuYmYiOjE3MDk3MTg5ODcsImV4cCI6MTcwOTcyMzE0OSwiYWNjdCI6MSwiYWNyIjoiMSIsImFpbyI6IkFiUUFTLzhXQUFBQWhWOUk4U2Y0ZGsrdGxGQTVQb3E1eWVGOUhvdDlUd0RHZ3NyZ2xKeDhhUmhsSEVWaDZxSHNzeFMrRGFLem00eHJPTElWTTMrN0NuUlF2RVdORXdkdG9LRWxWZXN4K2JQdnV1VVMwcnMvREh0MGg2RklhSExnMXc1Q016SzArY1RsT3ZVWlIvZG15blNPSHJDOVNYQVNadWJnSlh6TnorQ2RIVk9YekVUMDJpNHRqS3ZIL1VGZlNUMDNuQ1V4c3NNL3J1VzFaTS83Nkd1K1o3UnVOeVNINlZtWEpUS3MwZUdhc2h2NFp2bm9LSW89IiwiYWx0c2VjaWQiOiI1OjoxMDAzMjAwMjYwMkY4QzY4IiwiYW1yIjpbInB3ZCIsIm1mYSJdLCJhcHBfZGlzcGxheW5hbWUiOiJJbmZvIFN1cHBvcnQgVGVjaCBTdXJ2ZXkgKHRlc3QpIiwiYXBwaWQiOiJjNTgzMWQ2NS00YzVkLTQ3MTYtYTkzNS1hZGE4MWEwMDQ5ODkiLCJhcHBpZGFjciI6IjEiLCJlbWFpbCI6Imp1cnJlLmJyYW5kc2VuQGluZm9zdXBwb3J0LmNvbSIsImlkcCI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzMzNmQxMWExLWJjMjctNDk5OS1hNGUwLTNhNmVjMzM2NzViMC8iLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIyYTA2OjFiNDA6MTpjMDE6YmM2Yzo3MGZkOjgwOWI6NjA5ZCIsIm5hbWUiOiJKdXJyZSBCcmFuZHNlbiIsIm9pZCI6ImQ4MTM5NDkwLTE4M2UtNDJlMC1iMDg5LTVlNzVhYjliOWI1MCIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzMjAwMzVEMEU1Qzg5IiwicmgiOiIwLkFYTUFoWDFuRWNzdGxVU1FrMmxrSXFFRHB3TUFBQUFBQUFBQXdBQUFBQUFBQUFCekFETS4iLCJzY3AiOiJlbWFpbCBvcGVuaWQgcHJvZmlsZSIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6Ikx5XzUxN2xUNjZnTFNoazhkRGNRLWhEYlhqakdhSF9zcHoweG43LVZhZzgiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiRVUiLCJ0aWQiOiIxMTY3N2Q4NS0yZGNiLTQ0OTUtOTA5My02OTY0MjJhMTAzYTciLCJ1bmlxdWVfbmFtZSI6Imp1cnJlLmJyYW5kc2VuQGluZm9zdXBwb3J0LmNvbSIsInV0aSI6ImlRR29qWTRQM2thYVJBWFJkcWRJQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjEzYmQxYzcyLTZmNGEtNGRjZi05ODVmLTE4ZDNiODBmMjA4YSJdLCJ4bXNfc3QiOnsic3ViIjoiX242UkNjQ2ZlNWtxZ1JrSE1JT3hNRDlzY1drVUVOVkcyS2RSWXdaaWZlQSJ9LCJ4bXNfdGNkdCI6MTQ4ODk3MjIzNiwieG1zX3RkYnIiOiJFVSJ9.AltXdRAtLhBy5UcsrjCo_dPkE5HPtu3_5-Cx3Ma6Vxk3N4EpyQOiOHUcPjCmdSo3vMbr7QkbX1fUWvaltn3oyrDoRONFKB0s1q2Y9HaQV91OLYJ5Pbtt5sPvzFEzhd7GzQkZnH9arxZtP0mA0nYV3EoF2clPJR9-tYfw3iIzo7E3EDqJOy69TZPDXrl8TlLfwPT13Y9W2x_2VND0MlPWqkfh0UNEINS61P1eDdS6jyxev-hxP5ldb5J_h2XS_ZFbTIQVyCQ4cL4CS63qib1CkPdTvtlKniyKdXsxtuRkT2DX2WfEUq9w9v562VNVxTr-5lv8SrAvKj2VkcSd-Qmxlw	1709723148	3861	Bearer	email openid profile	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSJ9.eyJhdWQiOiJjNTgzMWQ2NS00YzVkLTQ3MTYtYTkzNS1hZGE4MWEwMDQ5ODkiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vMTE2NzdkODUtMmRjYi00NDk1LTkwOTMtNjk2NDIyYTEwM2E3L3YyLjAiLCJpYXQiOjE3MDk3MTg5ODcsIm5iZiI6MTcwOTcxODk4NywiZXhwIjoxNzA5NzIyODg3LCJlbWFpbCI6Imp1cnJlLmJyYW5kc2VuQGluZm9zdXBwb3J0LmNvbSIsImlkcCI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzMzNmQxMWExLWJjMjctNDk5OS1hNGUwLTNhNmVjMzM2NzViMC8iLCJuYW1lIjoiSnVycmUgQnJhbmRzZW4iLCJvaWQiOiJkODEzOTQ5MC0xODNlLTQyZTAtYjA4OS01ZTc1YWI5YjliNTAiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJqdXJyZS5icmFuZHNlbkBpbmZvc3VwcG9ydC5jb20iLCJyaCI6IjAuQVhNQWhYMW5FY3N0bFVTUWsybGtJcUVEcDJVZGc4VmRUQlpIcVRXdHFCb0FTWWx6QURNLiIsInN1YiI6Il9uNlJDY0NmZTVrcWdSa0hNSU94TUQ5c2NXa1VFTlZHMktkUll3WmlmZUEiLCJ0aWQiOiIxMTY3N2Q4NS0yZGNiLTQ0OTUtOTA5My02OTY0MjJhMTAzYTciLCJ1dGkiOiJpUUdvalk0UDNrYWFSQVhSZHFkSUFBIiwidmVyIjoiMi4wIn0.XPoCs2IUQ4APusrXbjEx2zA54EwZJdNfqNFArYpAXANyGtO5Uhayh7MCvtumfXL5pDryiSqakMCVuDmRibBQl_uioMBDySeX8iupx1jIcW7etL7h6t0THQdEmPusiWlLtdJJwt8de1NiY75OYRUP1tUaVeGqOq3ZOmXqF2l-T3jM9vAC_SuP2nukM7SaLFEftYlsnSvTi4rIx9MO1EuThfDT2auRAbO5kNYzA4fQthIANpPhCEScGxBmvJ1PUI4crNJBrbCKHZ3Gg08UbZ7qB980Goka_Bx8wVhpuIeL-tywwTtDeKBnZRpdhJfV5mLoO9FLiDSDy6YmMVD-cx4R4A	577d1660-faeb-4ce6-a0ed-a0976a9f0fd2
+cltgyv0na000eblsjz2tja0eb	cltgyv0mu000cblsjmjokdbei	oauth	azure-ad	TxJvCShRxMG4PeTPw25mV5fgcXct8xefuAhPtoy5KHI	\N	eyJ0eXAiOiJKV1QiLCJub25jZSI6IjdSRFEzLXZJekR6dFFfeXNSX3ZNSmFnTk40bXBlcVQteU1qSzd0amp1TzAiLCJhbGciOiJSUzI1NiIsIng1dCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSIsImtpZCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8xMTY3N2Q4NS0yZGNiLTQ0OTUtOTA5My02OTY0MjJhMTAzYTcvIiwiaWF0IjoxNzA5Nzk5ODQ2LCJuYmYiOjE3MDk3OTk4NDYsImV4cCI6MTcwOTgwNTQwOSwiYWNjdCI6MSwiYWNyIjoiMSIsImFpbyI6IkFZUUFlLzhXQUFBQVZ1dWh6RWxpVjk5ak80dFRxK2ZvM2NpYU51dFBBZjgrSTh3bWFCRXMzekh0Y1hqazBqSXpBM2JRaE0rTEVyV1BDTDdqK1NORGRJN0NZZ0RFQ3pNdkZLSGpsSHBrSTRqNE9aRFFTMXBpMDVLZlA4WWYrYUg2alZaODlQL05xNkhINk4rMTZ2ZU03OUNTdVhSQ3ZkcVcxTWhBUkxPYTY3NlJJckptM0wrSVVzTT0iLCJhbHRzZWNpZCI6IjE6bGl2ZS5jb206MDAwNjQwMDBBQTlGODkxNCIsImFtciI6WyJwd2QiLCJtZmEiXSwiYXBwX2Rpc3BsYXluYW1lIjoiSW5mbyBTdXBwb3J0IFRlY2ggU3VydmV5ICh0ZXN0KSIsImFwcGlkIjoiYzU4MzFkNjUtNGM1ZC00NzE2LWE5MzUtYWRhODFhMDA0OTg5IiwiYXBwaWRhY3IiOiIxIiwiZW1haWwiOiJqdXJyZWJyYW5kc2VuQGhvdG1haWwuY29tIiwiZmFtaWx5X25hbWUiOiJicmFuZHNlbiIsImdpdmVuX25hbWUiOiJqdXJyZSIsImlkcCI6ImxpdmUuY29tIiwiaWR0eXAiOiJ1c2VyIiwiaXBhZGRyIjoiMmEwNjoxYjQwOjE6YzAxOmJjNmM6NzBmZDo4MDliOjYwOWQiLCJuYW1lIjoianVycmVicmFuZHNlbiIsIm9pZCI6ImY3YzU4OTMwLTRkOTItNGJiMy1hMjRkLTkzMzE4NzA0ZjY1YiIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzMjAwMzVEMTBDNEI5IiwicmgiOiIwLkFYTUFoWDFuRWNzdGxVU1FrMmxrSXFFRHB3TUFBQUFBQUFBQXdBQUFBQUFBQUFCekFDYy4iLCJzY3AiOiJlbWFpbCBvcGVuaWQgcHJvZmlsZSIsInN1YiI6Ik9kWlhFMDdCeDEwVlJnOWhjMjdYZVZwSERLb2wza1NCcmg0bHBjSXBZVmsiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiRVUiLCJ0aWQiOiIxMTY3N2Q4NS0yZGNiLTQ0OTUtOTA5My02OTY0MjJhMTAzYTciLCJ1bmlxdWVfbmFtZSI6ImxpdmUuY29tI2p1cnJlYnJhbmRzZW5AaG90bWFpbC5jb20iLCJ1dGkiOiJ4ekZBSEFMaUZFV09lMTFkUk1Kc0FBIiwidmVyIjoiMS4wIiwid2lkcyI6WyIxM2JkMWM3Mi02ZjRhLTRkY2YtOTg1Zi0xOGQzYjgwZjIwOGEiXSwieG1zX3N0Ijp7InN1YiI6IlR4SnZDU2hSeE1HNFBlVFB3MjVtVjVmZ2NYY3Q4eGVmdUFoUHRveTVLSEkifSwieG1zX3RjZHQiOjE0ODg5NzIyMzYsInhtc190ZGJyIjoiRVUifQ.ap8HZcSCYRHxrzrYcNvCe22cudoaskFUpqVfop9PAP20r3cnhoqMZpb0qFN2TT93Cq2nZWZh31YSoZlscWGzG9zvaBhlXtxUxpR8_2_lwLJK01aXhyh87iKIHnBuzbvurhWH2sFhD3DbKlUDBE9vbmRi4_yHkwXgQDXUy5CevETyAu92umX7wc413DwheX7si3LRqes81djS5cjyVOOW20HZiqpbHDHAOzxo5mKZooQ4z7_unjh8_YfFPe8p996KgWcgjVLSAQXqHlN6fhlrlNUgdwNT2gaD90CKOqrumV9LDTzNa8237wIpnc4wbpqB0SE8N4X0zzutxZBJNSLcNw	1709805408	5262	Bearer	email openid profile	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSJ9.eyJhdWQiOiJjNTgzMWQ2NS00YzVkLTQ3MTYtYTkzNS1hZGE4MWEwMDQ5ODkiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vMTE2NzdkODUtMmRjYi00NDk1LTkwOTMtNjk2NDIyYTEwM2E3L3YyLjAiLCJpYXQiOjE3MDk3OTk4NDYsIm5iZiI6MTcwOTc5OTg0NiwiZXhwIjoxNzA5ODAzNzQ2LCJlbWFpbCI6Imp1cnJlYnJhbmRzZW5AaG90bWFpbC5jb20iLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC85MTg4MDQwZC02YzY3LTRjNWItYjExMi0zNmEzMDRiNjZkYWQvIiwibmFtZSI6Imp1cnJlYnJhbmRzZW4iLCJvaWQiOiJmN2M1ODkzMC00ZDkyLTRiYjMtYTI0ZC05MzMxODcwNGY2NWIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJqdXJyZWJyYW5kc2VuQGhvdG1haWwuY29tIiwicmgiOiIwLkFYTUFoWDFuRWNzdGxVU1FrMmxrSXFFRHAyVWRnOFZkVEJaSHFUV3RxQm9BU1lsekFDYy4iLCJzdWIiOiJUeEp2Q1NoUnhNRzRQZVRQdzI1bVY1ZmdjWGN0OHhlZnVBaFB0b3k1S0hJIiwidGlkIjoiMTE2NzdkODUtMmRjYi00NDk1LTkwOTMtNjk2NDIyYTEwM2E3IiwidXRpIjoieHpGQUhBTGlGRVdPZTExZFJNSnNBQSIsInZlciI6IjIuMCJ9.EMJplRXzHZwpaR8IJvfeLZOGYWSxeHN2zLap1rQJMWCwpYMeEdvhJLEgdE74CzlIFQ2deENHrk5KO_7qnLkCZQQRIY_Zku3dcdwHgXnGkuqh06zqYVNxnlt_6jKzHFoj7bsgmAqtb6qK2tssukrQdk9cDo5HRIVN1bPUY8Nd2PuNubnQ90wM0h9DcqVDptTqxGuc4IyEbxlq9JKD5SxtqV4MmuIDIyxYLsysaOIRu9lPhtHKg_kE_wkguMOhIJEdvN0YC19BLOax5yMPgVWCnbnBQnKSQMa5ogAzjDKd2009kMo4h24OxFO2jqRfuatFxD8tj9novZk3hXEb9UhCTQ	e30502a5-111e-48eb-a383-a1a57d128872
+\.
+
+
+--
+-- Data for Name: AnswerOption; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."AnswerOption" (id, option) FROM stdin;
+cltfmxq3200002hsdmlswqpzx	0
+cltfmxq3300012hsdp6y7fs7e	1
+cltfmxq3300022hsdl237nczb	2
+cltfmxq3300032hsd3hvun83v	3
+cltfmxq3300042hsdi471akdg	4
+\.
+
+
+--
+-- Data for Name: Question; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Question" (id, "surveyId", "questionText") FROM stdin;
+cltfn5t55000l2hsdp3w3vluz	cltfmy5rm00052hsdjzfgqqy3	(Agile) Projectbeheersing
+cltfn5t55000m2hsdw63cj7sg	cltfmy5rm00052hsdjzfgqqy3	(Gebruiker) Acceptatie testen
+cltfn5t55000n2hsdj47e3tbm	cltfmy5rm00052hsdjzfgqqy3	.NET
+cltfn5t55000o2hsdif3hwemz	cltfmy5rm00052hsdjzfgqqy3	.NET MAUI
+cltfn5t56000p2hsd8g9j73ak	cltfmy5rm00052hsdjzfgqqy3	A/B testing for ML
+cltfn6fwn000q2hsdy6qc6j7f	cltfmy5rm00052hsdjzfgqqy3	Acceptance criteria (overdracht naar beheer)
+cltfnnpbe000r2hsdydr2l7k6	cltfmy5rm00052hsdjzfgqqy3	Architectural Decision Record (ADR)
+cltfnnpbe000s2hsdjaexusec	cltfmy5rm00052hsdjzfgqqy3	Agile estimation (storypoints/tshirt sizing)
+cltfnnpbe000t2hsdwfy8bh6g	cltfmy5rm00052hsdjzfgqqy3	Agile Reporting
+cltfnnpbf000u2hsdac512r25	cltfmy5rm00052hsdjzfgqqy3	Android Kotlin
+cltfnnpbf000v2hsdj89jfhio	cltfmy5rm00052hsdjzfgqqy3	Android platform kennis
+cltfnnpbf000w2hsdqz3vt0z6	cltfmy5rm00052hsdjzfgqqy3	Angular
+cltfnnpbf000x2hsdd0fdunr7	cltfmy5rm00052hsdjzfgqqy3	Angular with Signals (new)
+cltfnnpbg000y2hsdx55m3rrf	cltfmy5rm00052hsdjzfgqqy3	Ansible
+cltfnnpbg000z2hsd33u6d8ix	cltfmy5rm00052hsdjzfgqqy3	Apache Airflow
+cltfnnpbg00102hsd7wdcxcrl	cltfmy5rm00052hsdjzfgqqy3	Apache Kafka
+cltfnnpbg00112hsdgnqm1q4o	cltfmy5rm00052hsdjzfgqqy3	Apache Spark
+cltfnnpbg00122hsdmh93qj1j	cltfmy5rm00052hsdjzfgqqy3	App Store distributie
+cltfnnpbg00132hsdk1xbyem9	cltfmy5rm00052hsdjzfgqqy3	Archimate
+cltfnnpbg00142hsd0m2c64b9	cltfmy5rm00052hsdjzfgqqy3	ASP.NET
+cltfnnpbh00152hsdoc2i90nv	cltfmy5rm00052hsdjzfgqqy3	Axon Framework
+cltfnnpbh00162hsd67h2dpk9	cltfmy5rm00052hsdjzfgqqy3	Authenticatie (OAuth, OAuth2.0, SAML, OpenID, etc.)
+cltfnnpbh00172hsd5ncj4aag	cltfmy5rm00052hsdjzfgqqy3	Azure Active Directory
+cltfnnpbh00182hsd9hw1x75a	cltfmy5rm00052hsdjzfgqqy3	Azure Advisor
+cltfnnpbh00192hsdy6ru3vfl	cltfmy5rm00052hsdjzfgqqy3	Azure Analysis Services
+cltfnnpbh001a2hsd0fmb5jd0	cltfmy5rm00052hsdjzfgqqy3	Azure API Management
+cltfnnpbh001b2hsd63ja7wnf	cltfmy5rm00052hsdjzfgqqy3	Azure App Configuration
+cltfnnpbh001c2hsdtnwmjjdv	cltfmy5rm00052hsdjzfgqqy3	Azure App Service
+cltfnnpbi001d2hsdiiv4v4cz	cltfmy5rm00052hsdjzfgqqy3	Azure Application Gateway
+cltfnnpbi001e2hsdy1x1je4g	cltfmy5rm00052hsdjzfgqqy3	Azure Automation
+cltfnnpbi001f2hsd3b1webeb	cltfmy5rm00052hsdjzfgqqy3	Azure Blueprints
+cltfnnpbi001g2hsd1u7gjj2e	cltfmy5rm00052hsdjzfgqqy3	Azure Chaos Studio
+cltfnnpbi001h2hsd79jp1vkk	cltfmy5rm00052hsdjzfgqqy3	Azure CLI
+cltfnnpbi001i2hsd88khbs86	cltfmy5rm00052hsdjzfgqqy3	Azure Cognitive Services
+cltfnnpbi001j2hsd7hwo4zlo	cltfmy5rm00052hsdjzfgqqy3	Azure Container Apps
+cltfnnpbj001k2hsd0dmjtmp9	cltfmy5rm00052hsdjzfgqqy3	Azure Container Instances
+cltfnnpbj001l2hsdohyy3yu2	cltfmy5rm00052hsdjzfgqqy3	Azure Container Registry
+cltfnnpbj001m2hsdkrsx0mg6	cltfmy5rm00052hsdjzfgqqy3	Azure Cosmos DB
+cltfnnpbj001n2hsd7f786w79	cltfmy5rm00052hsdjzfgqqy3	Azure Data Explorer / Azure Synapse Data Explorer
+cltfnnpbk001o2hsdcl3zt0li	cltfmy5rm00052hsdjzfgqqy3	Azure Data Share
+cltfnnpbk001p2hsdrp3dlp5a	cltfmy5rm00052hsdjzfgqqy3	Azure Databricks
+cltfnnpbk001q2hsdhvi58yft	cltfmy5rm00052hsdjzfgqqy3	Azure Defender for Cloud
+cltfnnpbk001s2hsdwrl0gzfs	cltfmy5rm00052hsdjzfgqqy3	Azure Event Grid
+cltfnnpbl001t2hsd6rac9a47	cltfmy5rm00052hsdjzfgqqy3	Azure Event Hubs
+cltfnnpbl001u2hsdvrg3gh3g	cltfmy5rm00052hsdjzfgqqy3	Azure Firewall
+cltfnnpbl001v2hsdumwh2jd2	cltfmy5rm00052hsdjzfgqqy3	Azure Front Door
+cltfnnpbl001w2hsdyf1gftb4	cltfmy5rm00052hsdjzfgqqy3	Azure Functions
+cltfnnpbl001x2hsdt3022vdl	cltfmy5rm00052hsdjzfgqqy3	Azure IoT Edge
+cltfnnpbm001y2hsdg0h802c4	cltfmy5rm00052hsdjzfgqqy3	Azure IoT Hub
+cltfntib4001z2hsdd79chm43	cltfmy5rm00052hsdjzfgqqy3	Azure Key Vault
+cltfntib400202hsdkoq4b7ll	cltfmy5rm00052hsdjzfgqqy3	Azure Kubernetes Service
+cltfntib400212hsdh7cl9vy0	cltfmy5rm00052hsdjzfgqqy3	Azure Load Testing
+cltfntib500222hsd088bguof	cltfmy5rm00052hsdjzfgqqy3	Azure Log Analytics
+cltfntib500232hsd4u7lbinv	cltfmy5rm00052hsdjzfgqqy3	Azure Logic Apps
+cltfntib500242hsdkeifz4p2	cltfmy5rm00052hsdjzfgqqy3	Azure Machine Learning Service
+cltfntib500252hsdhwn6snaq	cltfmy5rm00052hsdjzfgqqy3	Azure Networking
+cltfntib500262hsd2497z9rl	cltfmy5rm00052hsdjzfgqqy3	Azure Policy
+cltfntib500272hsdkspe9g8q	cltfmy5rm00052hsdjzfgqqy3	Azure Redis Cache
+cltfntib500282hsd4jrq2ihb	cltfmy5rm00052hsdjzfgqqy3	Azure Resource Manager (ARM)
+cltfntib500292hsd84ct24fp	cltfmy5rm00052hsdjzfgqqy3	Azure Sentinel
+cltfntib5002a2hsd8560f70u	cltfmy5rm00052hsdjzfgqqy3	Azure Service Bus
+cltfntib6002b2hsdnra35uyt	cltfmy5rm00052hsdjzfgqqy3	Azure SQL Database
+cltfntib6002c2hsdmofe387b	cltfmy5rm00052hsdjzfgqqy3	Azure Static Web Apps
+cltfntib6002d2hsdirlqzh6a	cltfmy5rm00052hsdjzfgqqy3	Azure Storage
+cltfntib6002e2hsdj3k7ysst	cltfmy5rm00052hsdjzfgqqy3	Azure Stream Analytics
+cltfntib6002f2hsd7og4nt6c	cltfmy5rm00052hsdjzfgqqy3	Azure Synapse Dedicated SQL Pool
+cltfntib6002g2hsd8vga0bhc	cltfmy5rm00052hsdjzfgqqy3	Azure Synapse Pipelines / Azure Data Factory
+cltfntib6002h2hsd1hmls8by	cltfmy5rm00052hsdjzfgqqy3	Azure Synapse Serverless SQL
+cltfntib6002i2hsdu1tupsla	cltfmy5rm00052hsdjzfgqqy3	Azure Synapse Spark (Notebooks, Jobs, Pools)
+cltfntib7002j2hsdoe61htyo	cltfmy5rm00052hsdjzfgqqy3	Azure Virtual Machines
+cltfntib7002k2hsdgz35yes1	cltfmy5rm00052hsdjzfgqqy3	Backlog management
+cltfntib7002l2hsdsg22j4iz	cltfmy5rm00052hsdjzfgqqy3	Back-up Managemet/Recovery  (Veaam, Azure Back-up. Backupexec, etc)
+cltfntib7002m2hsdcw2nu8h6	cltfmy5rm00052hsdjzfgqqy3	Bicep
+cltfntib7002n2hsdwx6z97t7	cltfmy5rm00052hsdjzfgqqy3	Bitnami Sealed Secrets
+cltfntib7002o2hsd71sl11v4	cltfmy5rm00052hsdjzfgqqy3	Blazor
+cltfntib8002p2hsdruczbbsn	cltfmy5rm00052hsdjzfgqqy3	Business Case
+cltfntib8002q2hsdswbhl215	cltfmy5rm00052hsdjzfgqqy3	C#
+cltfntib8002r2hsdhvsa8eda	cltfmy5rm00052hsdjzfgqqy3	Cassandra
+cltfntib8002s2hsd69ompigw	cltfmy5rm00052hsdjzfgqqy3	Chaos Engineering
+cltfntib8002t2hsdi9uggs0k	cltfmy5rm00052hsdjzfgqqy3	CIA Rating (BIV classificatie)
+cltfntib8002u2hsdys0z8wun	cltfmy5rm00052hsdjzfgqqy3	Cloud Platform - AWS (Amazon Web Services)
+cltfntib9002v2hsdqp9ktdmt	cltfmy5rm00052hsdjzfgqqy3	Cloud Platform - Azure
+cltfntib9002w2hsdbywzh85r	cltfmy5rm00052hsdjzfgqqy3	Cloud Platform - Google
+cltfntib9002x2hsdu01ms9xe	cltfmy5rm00052hsdjzfgqqy3	Code Review
+cltfntib9002y2hsd841jd4a8	cltfmy5rm00052hsdjzfgqqy3	Command Query Responsibility Segregation (CQRS)
+cltfntib9002z2hsd6ydw0og9	cltfmy5rm00052hsdjzfgqqy3	Complexity Point Assessment
+cltfntib900302hsd4urje3pg	cltfmy5rm00052hsdjzfgqqy3	Context Diagrams
+cltfntiba00312hsdjlb48unb	cltfmy5rm00052hsdjzfgqqy3	Continuous delivery
+cltfntiba00322hsd6szkomgv	cltfmy5rm00052hsdjzfgqqy3	Dapr
+cltfntiba00332hsdaj1d98bq	cltfmy5rm00052hsdjzfgqqy3	Dask / Ray
+cltfntiba00342hsdev7smjj1	cltfmy5rm00052hsdjzfgqqy3	Data Lake (incl Azure Data Lake Gen II)
+cltfntiba00352hsdc8mhrix5	cltfmy5rm00052hsdjzfgqqy3	Data Masking
+cltfnzlqs00362hsdgfv4pr6a	cltfmy5rm00052hsdjzfgqqy3	DataOps
+cltfnzlqs00372hsdmr8mkq7e	cltfmy5rm00052hsdjzfgqqy3	DAX
+cltfnzlqs00382hsdn0ecew3e	cltfmy5rm00052hsdjzfgqqy3	Delta (Lake) (On Azure Synapse / Azure Databricks / ….)
+cltfnzlqt00392hsdami0rj2x	cltfmy5rm00052hsdjzfgqqy3	Detekt
+cltfnzlqt003a2hsd87d5vhov	cltfmy5rm00052hsdjzfgqqy3	DevOps
+cltfnzlqt003b2hsdpz6ojx3u	cltfmy5rm00052hsdjzfgqqy3	Dimensional Modeling
+cltfnzlqt003c2hsdu3stgvrb	cltfmy5rm00052hsdjzfgqqy3	Disaster Recovery (RTO, etc)
+cltfnzlqt003d2hsdpc69sa70	cltfmy5rm00052hsdjzfgqqy3	Disaster recovery testing
+cltfnzlqt003e2hsdeioiad57	cltfmy5rm00052hsdjzfgqqy3	Distributed Data Architectures (Data Mesh / Data Fabric / …)
+cltfnzlqt003f2hsdommdonz8	cltfmy5rm00052hsdjzfgqqy3	Docker
+cltfnzlqt003g2hsdbiqyhmod	cltfmy5rm00052hsdjzfgqqy3	Docker Compose
+cltfnzlqt003h2hsdbxzljpxp	cltfmy5rm00052hsdjzfgqqy3	Domain Name System
+cltfnzlqt003i2hsdj3vd4rwd	cltfmy5rm00052hsdjzfgqqy3	Domain-Driven Design
+cltfnzlqu003j2hsd4dubqx43	cltfmy5rm00052hsdjzfgqqy3	Elastic
+cltfnzlqu003k2hsdsvp8f5o9	cltfmy5rm00052hsdjzfgqqy3	Elastic LogStash Kibana (ELK)
+cltfnzlqu003l2hsdpxb7jtcg	cltfmy5rm00052hsdjzfgqqy3	Entity Framework
+cltfnzlqu003m2hsdlq9zh1ae	cltfmy5rm00052hsdjzfgqqy3	Entity Framework Migrations
+cltfnzlqu003n2hsdsfdzon1z	cltfmy5rm00052hsdjzfgqqy3	Espresso
+cltfnzlqu003o2hsdtoye0t7b	cltfmy5rm00052hsdjzfgqqy3	Event Driven Architecture / Event sourcing
+cltfnzlqu003p2hsdq9hif2go	cltfmy5rm00052hsdjzfgqqy3	Expert Estimation
+cltfnzlqu003q2hsd87gw5egy	cltfmy5rm00052hsdjzfgqqy3	Explainable AI
+cltfnzlqu003r2hsd50zo7ys9	cltfmy5rm00052hsdjzfgqqy3	File formats for Data Lake / Data Engineering / Machine Learning (csv, xml, json, parquet, avro, …)
+cltfnzlqu003s2hsdig69nt1h	cltfmy5rm00052hsdjzfgqqy3	Flutter
+cltfnzlqu003t2hsdimq2whfr	cltfmy5rm00052hsdjzfgqqy3	Function Point Analysis
+cltfnzlqu003u2hsdkhkuw2t1	cltfmy5rm00052hsdjzfgqqy3	Gatlin
+cltfnzlqv003v2hsds6ah0sq8	cltfmy5rm00052hsdjzfgqqy3	GDPR / AVG
+cltfnzlqv003w2hsdpasbl7gz	cltfmy5rm00052hsdjzfgqqy3	Generative AI (OpenAI GPT-4, ChatGPT, StableDiffusion, MidJourney, …)
+cltfnzlqv003x2hsdre0yxmu4	cltfmy5rm00052hsdjzfgqqy3	Gherkin/Cucumber 
+cltfnzlqv003y2hsdn70b7njn	cltfmy5rm00052hsdjzfgqqy3	Git
+cltfnzlqv003z2hsd33mao6kd	cltfmy5rm00052hsdjzfgqqy3	GitHub (Enterprise)
+cltfnzlqv00402hsdcj37neqd	cltfmy5rm00052hsdjzfgqqy3	Github Copilot 
+cltfnzlqv00412hsd0vzpfvwi	cltfmy5rm00052hsdjzfgqqy3	GitOps
+cltfnzlqv00422hsd3rgcpe6o	cltfmy5rm00052hsdjzfgqqy3	Great Expectations
+cltfnzlqv00432hsd6ndaeds8	cltfmy5rm00052hsdjzfgqqy3	Helm
+cltfnzlqv00442hsdl4e1csq5	cltfmy5rm00052hsdjzfgqqy3	Highlight Report
+cltfnzlqv00452hsd1qf2tztn	cltfmy5rm00052hsdjzfgqqy3	Hyper-V
+cltfnzlqv00462hsddfd9pbws	cltfmy5rm00052hsdjzfgqqy3	Impact Mapping
+cltfnzlqv00472hsd5yyuyusd	cltfmy5rm00052hsdjzfgqqy3	Infrastructure as code
+cltfnzlqv00482hsd37y2ez8b	cltfmy5rm00052hsdjzfgqqy3	IntelliJ
+cltfnzlqv00492hsdjnunt6za	cltfmy5rm00052hsdjzfgqqy3	InterpretML
+cltfnzlqw004a2hsdygb52em1	cltfmy5rm00052hsdjzfgqqy3	iOS platform kennis
+cltfnzlqw004b2hsduqcutrn1	cltfmy5rm00052hsdjzfgqqy3	IT Service Management (ITIL)
+cltfo4fe9004c2hsdmxgd0sut	cltfmy5rm00052hsdjzfgqqy3	Jetpack Compose
+cltfo4fe9004d2hsd9qj1wbar	cltfmy5rm00052hsdjzfgqqy3	JPA (Open JPA)
+cltfo4fe9004e2hsd8snfiji2	cltfmy5rm00052hsdjzfgqqy3	Juniper Networking
+cltfo4fe9004f2hsdd1hh4nhh	cltfmy5rm00052hsdjzfgqqy3	JUnit 5 (Jupiter)
+cltfo4fe9004g2hsdrz9085nz	cltfmy5rm00052hsdjzfgqqy3	Kanban
+cltfo4fe9004h2hsd6803m922	cltfmy5rm00052hsdjzfgqqy3	KeyCloak
+cltfo4fea004i2hsd6jq91ba8	cltfmy5rm00052hsdjzfgqqy3	Kotlin
+cltfo4fea004j2hsd9y1ge61x	cltfmy5rm00052hsdjzfgqqy3	Kubernetes
+cltfo4fea004k2hsd1hyzozn4	cltfmy5rm00052hsdjzfgqqy3	LeSS
+cltfo4fea004l2hsdx2d6gycg	cltfmy5rm00052hsdjzfgqqy3	Linux
+cltfo4fea004m2hsd0g0om133	cltfmy5rm00052hsdjzfgqqy3	Liquibase / Flyway
+cltfo4fea004n2hsd5kyk9xnh	cltfmy5rm00052hsdjzfgqqy3	'LTS' Java versions
+cltfo4fea004o2hsdqh0u6f52	cltfmy5rm00052hsdjzfgqqy3	Maven
+cltfo4feb004p2hsdmtmiv62g	cltfmy5rm00052hsdjzfgqqy3	Micro-service architecture
+cltfo4feb004q2hsdib5kq8bh	cltfmy5rm00052hsdjzfgqqy3	Microsoft Purview
+cltfo4feb004r2hsd7ao1ob0p	cltfmy5rm00052hsdjzfgqqy3	MLflow
+cltfo4feb004s2hsdmybawx5u	cltfmy5rm00052hsdjzfgqqy3	MLOps
+cltfo4feb004t2hsdk32gg0dx	cltfmy5rm00052hsdjzfgqqy3	Mockito
+cltfo4feb004u2hsd54fdh4tf	cltfmy5rm00052hsdjzfgqqy3	Mongo DB
+cltfo4feb004v2hsdo3llkif7	cltfmy5rm00052hsdjzfgqqy3	Monitoring (Azure Monitor, SCOM, PRTG, etc)
+cltfo4feb004w2hsdlm7axmjr	cltfmy5rm00052hsdjzfgqqy3	Neo4J
+cltfo4feb004x2hsd4mfk33ne	cltfmy5rm00052hsdjzfgqqy3	Next.js
+cltfo4feb004y2hsdmf4ckh9t	cltfmy5rm00052hsdjzfgqqy3	NGINX
+cltfo4fec004z2hsdar49uaeo	cltfmy5rm00052hsdjzfgqqy3	Node.js
+cltfo4fec00502hsdosgu6c71	cltfmy5rm00052hsdjzfgqqy3	Non-Oracle JVMs
+cltfo4fec00512hsdas82sa6x	cltfmy5rm00052hsdjzfgqqy3	Notification Hubs
+cltfo4fec00522hsd61zu0t13	cltfmy5rm00052hsdjzfgqqy3	Onion Architecture
+cltfo4fec00532hsdqzowf850	cltfmy5rm00052hsdjzfgqqy3	Pandas
+cltfo4fec00542hsd0ndf832g	cltfmy5rm00052hsdjzfgqqy3	Pentesting
+cltfodxjd00552hsd03du0cv9	cltfmy5rm00052hsdjzfgqqy3	Performance/reliability testing
+cltfodxjd00562hsdbmd2ykey	cltfmy5rm00052hsdjzfgqqy3	Python
+cltfodxje00572hsd1hwnestx	cltfmy5rm00052hsdjzfgqqy3	Playwright
+cltfodxje00582hsdzwrkw6w9	cltfmy5rm00052hsdjzfgqqy3	PostgreSQL
+cltfodxje00592hsdt4p0wu9g	cltfmy5rm00052hsdjzfgqqy3	Power Apps
+cltfodxje005a2hsdqbxij5qr	cltfmy5rm00052hsdjzfgqqy3	Power BI 
+cltfodxje005b2hsdsqj6u07w	cltfmy5rm00052hsdjzfgqqy3	PowerShell
+cltfodxje005c2hsdiipsminu	cltfmy5rm00052hsdjzfgqqy3	Prefect
+cltfodxje005d2hsd8mt9jm0s	cltfmy5rm00052hsdjzfgqqy3	Prometheus/Grafana
+cltfodxje005e2hsdyy7qrxmr	cltfmy5rm00052hsdjzfgqqy3	Pulumi
+cltfodxjf005f2hsdnmfz9xdc	cltfmy5rm00052hsdjzfgqqy3	Pytest
+cltfodxjf005g2hsdxea7azua	cltfmy5rm00052hsdjzfgqqy3	Python (for data/ai/general purpose)
+cltfodxjf005h2hsdr7y2oq1v	cltfmy5rm00052hsdjzfgqqy3	PyTorch
+cltfodxjf005i2hsdtrrhjf53	cltfmy5rm00052hsdjzfgqqy3	RabbitMQ
+cltfodxjf005j2hsdnm92zxg1	cltfmy5rm00052hsdjzfgqqy3	Roll-based access control (RBAC)
+cltfodxjf005k2hsduojzry0d	cltfmy5rm00052hsdjzfgqqy3	React
+cltfodxjf005l2hsdl344qvsr	cltfmy5rm00052hsdjzfgqqy3	React with Next.js
+cltfodxjf005m2hsdjb6sciqz	cltfmy5rm00052hsdjzfgqqy3	React native
+cltfodxjf005n2hsd31z2v9mm	cltfmy5rm00052hsdjzfgqqy3	Reactive manifesto
+cltfodxjf005o2hsdgnbwdqii	cltfmy5rm00052hsdjzfgqqy3	Requirements Analysis 
+cltfodxjf005p2hsdya7fr1jl	cltfmy5rm00052hsdjzfgqqy3	Requirements Definition
+cltfodxjg005q2hsdms1csn0n	cltfmy5rm00052hsdjzfgqqy3	Risk Assessments
+cltfodxjg005r2hsdbz8xbtb2	cltfmy5rm00052hsdjzfgqqy3	Roadmapping / scope management
+cltfodxjg005s2hsdijhsqngx	cltfmy5rm00052hsdjzfgqqy3	Routing/Firewalling
+cltfodxjg005t2hsdxy1579b9	cltfmy5rm00052hsdjzfgqqy3	Reactive Extensions for JavaScript (RxJS)
+cltfodxjg005u2hsd4w10qub1	cltfmy5rm00052hsdjzfgqqy3	SAFe
+cltfodxjg005v2hsd7e41l2bc	cltfmy5rm00052hsdjzfgqqy3	Saga Pattern
+cltfodxjg005w2hsdj9achl4i	cltfmy5rm00052hsdjzfgqqy3	Scaled Agile
+cltfodxjg005x2hsdjsrz4bs0	cltfmy5rm00052hsdjzfgqqy3	Scikit-learn
+cltfodxjg005y2hsdoa4c7uoc	cltfmy5rm00052hsdjzfgqqy3	Scipy
+cltfodxjg005z2hsdy1jlqiyo	cltfmy5rm00052hsdjzfgqqy3	Scrum
+cltfodxjg00602hsdkvdzyuta	cltfmy5rm00052hsdjzfgqqy3	Service level management (SLA)
+cltfodxjg00612hsddrlhypq7	cltfmy5rm00052hsdjzfgqqy3	SonarQube
+cltfodxjg00622hsdec8czddn	cltfmy5rm00052hsdjzfgqqy3	Specification by Example
+cltfodxjg00632hsdnlsktuyt	cltfmy5rm00052hsdjzfgqqy3	Spring / Spring Boot
+cltfodxjh00642hsdx6yj7h53	cltfmy5rm00052hsdjzfgqqy3	SQL (T-SQL, PL-SQL, …)
+cltfodxjh00652hsdpm11qy4e	cltfmy5rm00052hsdjzfgqqy3	SQL Server
+cltfodxjh00662hsdakxpkl6m	cltfmy5rm00052hsdjzfgqqy3	Stakeholder management
+cltfodxjh00672hsdi7uo08nd	cltfmy5rm00052hsdjzfgqqy3	Storage Area Networks
+cltfodxjh00682hsdnbe5jymc	cltfmy5rm00052hsdjzfgqqy3	Story Mapping
+cltfrelgw00692hsd3rgucsmh	cltfmy5rm00052hsdjzfgqqy3	Streamlit
+cltfrelgx006a2hsd790wzdfr	cltfmy5rm00052hsdjzfgqqy3	Stryker
+cltfrelgx006b2hsduta0x5sb	cltfmy5rm00052hsdjzfgqqy3	Supply chain security (dependency analysis / CVE)
+cltfrelgx006c2hsdr0jkol58	cltfmy5rm00052hsdjzfgqqy3	Svelte
+cltfrelgx006d2hsdb6vfuu65	cltfmy5rm00052hsdjzfgqqy3	Switching
+cltfrelgy006e2hsdgkdtgg3o	cltfmy5rm00052hsdjzfgqqy3	Tailwind CSS
+cltfrelgy006f2hsd5jcf716k	cltfmy5rm00052hsdjzfgqqy3	Technical debt management
+cltfrelgy006g2hsdmle33kd7	cltfmy5rm00052hsdjzfgqqy3	Tensorflow
+cltfrelgy006h2hsd0zev99ef	cltfmy5rm00052hsdjzfgqqy3	Terraform / OpenTofu
+cltfrelgy006i2hsd0ctlz2te	cltfmy5rm00052hsdjzfgqqy3	Test (automation) strategy (i.e. test pyramide)
+cltfrelgy006j2hsdhkw76gmm	cltfmy5rm00052hsdjzfgqqy3	TestContainers
+cltfrelgz006k2hsd5gb10s2k	cltfmy5rm00052hsdjzfgqqy3	Test-driven development
+cltfrelgz006l2hsdnv4miotx	cltfmy5rm00052hsdjzfgqqy3	Togaf
+cltfrelgz006m2hsdplofp70n	cltfmy5rm00052hsdjzfgqqy3	Typescript/Javascript
+cltfrelgz006n2hsd15h7pi0o	cltfmy5rm00052hsdjzfgqqy3	Unit testen
+cltfrelh0006o2hsdnm271352	cltfmy5rm00052hsdjzfgqqy3	Visual Studio App Center
+cltfrelh0006p2hsdf7dgdtu1	cltfmy5rm00052hsdjzfgqqy3	Vite
+cltfrelh0006q2hsdga5ep1v6	cltfmy5rm00052hsdjzfgqqy3	VMWare Cloud Director
+cltfrelh0006s2hsdd1tr39ve	cltfmy5rm00052hsdjzfgqqy3	Vue.js
+cltfrelh1006t2hsd1trdjf12	cltfmy5rm00052hsdjzfgqqy3	Vulnerability management
+cltfrelh1006u2hsdua5l5bsj	cltfmy5rm00052hsdjzfgqqy3	WAN connections (Dark Fiber, etc)
+cltfrelh1006v2hsdkxuwxahe	cltfmy5rm00052hsdjzfgqqy3	Web Components
+cltfrelh1006w2hsd0lznvglc	cltfmy5rm00052hsdjzfgqqy3	Windows Server
+cltfrelh1006x2hsdn28ne8a8	cltfmy5rm00052hsdjzfgqqy3	Eventstorming (DDD)
+cltfrelh1006y2hsd866kcq8q	cltfmy5rm00052hsdjzfgqqy3	Zero defect policy
+cltfrelh1006z2hsd7kmm50w5	cltfmy5rm00052hsdjzfgqqy3	Zero downtime deployments
+cltfrelh200702hsdmnwrbdf4	cltfmy5rm00052hsdjzfgqqy3	Business Process modelling
+cltfrelh200712hsdgb78da6g	cltfmy5rm00052hsdjzfgqqy3	Microservices Architecture
+cltfrelh200722hsdzf95tad2	cltfmy5rm00052hsdjzfgqqy3	Service Oriented Architecture
+cltfrheq000732hsdqcc0pyag	cltfmy5rm00052hsdjzfgqqy3	MVP (Minimal Viable Product) thinking
+cltfrheq000742hsd4mrwdfjp	cltfmy5rm00052hsdjzfgqqy3	Mutation testing
+cltfrheq000752hsdigu6fnmb	cltfmy5rm00052hsdjzfgqqy3	eslint
+cltfrheq000762hsdq6vq4ejc	cltfmy5rm00052hsdjzfgqqy3	Automated UI testing
+cltfrheq000772hsdcd4o38c4	cltfmy5rm00052hsdjzfgqqy3	Test Driven Development
+cltfrheq100782hsdj7ty6pqr	cltfmy5rm00052hsdjzfgqqy3	Acceptance Test Driven Development (ATDD)
+cltfrheq100792hsdcxlea0e8	cltfmy5rm00052hsdjzfgqqy3	Test data generatie / syntetic data
+cltfrheq1007a2hsd42ii3ks0	cltfmy5rm00052hsdjzfgqqy3	Test data anonimisering / pseudonimisering
+cltfrheq1007b2hsdrys3sbjn	cltfmy5rm00052hsdjzfgqqy3	Dynamic automated security testing (DAST)
+cltfrheq1007c2hsdrkt0e7fg	cltfmy5rm00052hsdjzfgqqy3	Lean software development
+cltfrheq1007d2hsd3aqm8an1	cltfmy5rm00052hsdjzfgqqy3	Content Security Policy (browser)
+cltfrheq1007e2hsdwdc9aqbf	cltfmy5rm00052hsdjzfgqqy3	Signals (front end)
+cltfrheq1007f2hsd2460znen	cltfmy5rm00052hsdjzfgqqy3	Scaled Agile Framework (SAFe)
+cltfrheq1007g2hsdjn78xaj9	cltfmy5rm00052hsdjzfgqqy3	Workflow engines (i.e. Camunda)
+cltfrheq1007h2hsd74t7bjzh	cltfmy5rm00052hsdjzfgqqy3	Vendor assessments / Pakket selecties
+cltfrheq1007i2hsdeeh3v3oj	cltfmy5rm00052hsdjzfgqqy3	PHP based CMS (Drupal / Wordpress)
+cltfrheq1007j2hsdxlnoxoid	cltfmy5rm00052hsdjzfgqqy3	IT Governance (CoBIT, ISEA 3402, etc.)
+cltfrheq2007k2hsdolgbssi4	cltfmy5rm00052hsdjzfgqqy3	Secure Software Development Lifecycle (SDLC, SSF)
+cltfrheq2007l2hsdkkcwbb3t	cltfmy5rm00052hsdjzfgqqy3	Project Management (Prince2)
+cltfrheq2007m2hsd7kkj6q1f	cltfmy5rm00052hsdjzfgqqy3	Headless CMS (storyblock)
+cltfrheq2007n2hsdorzuj5pw	cltfmy5rm00052hsdjzfgqqy3	NodeJS Platform / Serverside JavaScript
+cltfrheq2007o2hsdqmgs7vsq	cltfmy5rm00052hsdjzfgqqy3	Static site generator (Hugo, Gatsby, Docusaurus, etc)
+cltfrk1ng007p2hsd43ibvpi8	cltfmy5rm00052hsdjzfgqqy3	Azure DevOps
+cltfsvfc2007q2hsdxyekmb8t	cltfmy5rm00052hsdjzfgqqy3	VMWare vCenter
+\.
+
+
+--
+-- Data for Name: QuestionResult; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."QuestionResult" (id, "userId", "questionId", "answerId") FROM stdin;
+cltmxamiu0001jnfz0vvm66b3	cltfmpxah00007rq0y6ikmmuu	cltfn6fwn000q2hsdy6qc6j7f	cltfmxq3200002hsdmlswqpzx
+cltmxamiw0005jnfzwer7lwat	cltfmpxah00007rq0y6ikmmuu	cltfn5t55000m2hsdw63cj7sg	cltfmxq3200002hsdmlswqpzx
+cltmxamiw0003jnfzqc1oa2b3	cltfmpxah00007rq0y6ikmmuu	cltfnnpbe000s2hsdjaexusec	cltfmxq3200002hsdmlswqpzx
+cltmxamj30007jnfzuc8rc6ow	cltfmpxah00007rq0y6ikmmuu	cltfntib9002w2hsdbywzh85r	cltfmxq3200002hsdmlswqpzx
+cltmxamj40009jnfzi7w8m11d	cltfmpxah00007rq0y6ikmmuu	cltfodxjd00552hsd03du0cv9	cltfmxq3200002hsdmlswqpzx
+cltmxamj5000bjnfzw5pcbfac	cltfmpxah00007rq0y6ikmmuu	cltfrelgy006f2hsd5jcf716k	cltfmxq3300012hsdp6y7fs7e
+cltmxamjd000djnfz7a3t6344	cltfmpxah00007rq0y6ikmmuu	cltfnzlqv003w2hsdpasbl7gz	cltfmxq3300012hsdp6y7fs7e
+cltmxamjf000fjnfzaoxaizh9	cltfmpxah00007rq0y6ikmmuu	cltfntib8002s2hsd69ompigw	cltfmxq3200002hsdmlswqpzx
+cltmxamjh000hjnfzyix1um0d	cltfmpxah00007rq0y6ikmmuu	cltfodxjg00602hsdkvdzyuta	cltfmxq3300022hsdl237nczb
+cltmxamjk000ljnfztsix7ko7	cltfmpxah00007rq0y6ikmmuu	cltfodxjg005w2hsdj9achl4i	cltfmxq3300042hsdi471akdg
+cltmxamjk000jjnfz5hzw7qqj	cltfmpxah00007rq0y6ikmmuu	cltfntiba00312hsdjlb48unb	cltfmxq3300032hsd3hvun83v
+cltmxamjm000pjnfzrcpfd1em	cltfmpxah00007rq0y6ikmmuu	cltfo4fe9004g2hsdrz9085nz	cltfmxq3300012hsdp6y7fs7e
+cltmxamjm000njnfz3xiwsz9p	cltfmpxah00007rq0y6ikmmuu	cltfnzlqt003a2hsd87d5vhov	cltfmxq3300032hsd3hvun83v
+cltmxamjp000rjnfzb5321v3q	cltfmpxah00007rq0y6ikmmuu	cltfodxjg005u2hsd4w10qub1	cltfmxq3300032hsd3hvun83v
+cltmxamjr000tjnfz5kafv1lu	cltfmpxah00007rq0y6ikmmuu	cltfntib9002v2hsdqp9ktdmt	cltfmxq3300012hsdp6y7fs7e
+cltmxamjt000vjnfzaq0jwboc	cltfmpxah00007rq0y6ikmmuu	cltfntib8002t2hsdi9uggs0k	cltfmxq3300012hsdp6y7fs7e
+cltmxamjy0011jnfz3rlkoz6c	cltfmpxah00007rq0y6ikmmuu	cltfnzlqu003p2hsdq9hif2go	cltfmxq3300022hsdl237nczb
+cltmxamjw000xjnfzyzjvpm3k	cltfmpxah00007rq0y6ikmmuu	cltfodxjh00642hsdx6yj7h53	cltfmxq3300012hsdp6y7fs7e
+cltmxamjy000zjnfz6aztm656	cltfmpxah00007rq0y6ikmmuu	cltfodxjg00622hsdec8czddn	cltfmxq3300032hsd3hvun83v
+cltmxamkl0013jnfzmo8yw7qk	cltfmpxah00007rq0y6ikmmuu	cltfrelgx006b2hsduta0x5sb	cltfmxq3300022hsdl237nczb
+cltmxamkn0015jnfz9gaflwvv	cltfmpxah00007rq0y6ikmmuu	cltfntib9002x2hsdu01ms9xe	cltfmxq3300022hsdl237nczb
+cltmxamkv0017jnfz3mcsam0c	cltfmpxah00007rq0y6ikmmuu	cltfrelgz006k2hsd5gb10s2k	cltfmxq3300012hsdp6y7fs7e
+cltmxaml10019jnfznub4uvem	cltfmpxah00007rq0y6ikmmuu	cltfo4fea004l2hsdx2d6gycg	cltfmxq3300012hsdp6y7fs7e
+cltmxaml2001bjnfzfx1kcsng	cltfmpxah00007rq0y6ikmmuu	cltfo4fec00542hsd0ndf832g	cltfmxq3300022hsdl237nczb
+cltmxamln001djnfzeujxtkxp	cltfmpxah00007rq0y6ikmmuu	cltfrelgz006n2hsd15h7pi0o	cltfmxq3300022hsdl237nczb
+cltmxamlp001fjnfz5scr2hi0	cltfmpxah00007rq0y6ikmmuu	cltfntib8002u2hsdys0z8wun	cltfmxq3300012hsdp6y7fs7e
+cltmxamlr001hjnfztjljv54j	cltfmpxah00007rq0y6ikmmuu	cltfodxjg005z2hsdy1jlqiyo	cltfmxq3300022hsdl237nczb
+cltmxamls001jjnfz85yv0o9k	cltfmpxah00007rq0y6ikmmuu	cltfrelh1006w2hsd0lznvglc	cltfmxq3300012hsdp6y7fs7e
+cltmxamlt001ljnfzwxjtih65	cltfmpxah00007rq0y6ikmmuu	cltfnzlqv00472hsd5yyuyusd	cltfmxq3300022hsdl237nczb
+cltmxamlv001njnfzwbc4qayc	cltfmpxah00007rq0y6ikmmuu	cltfnzlqv003v2hsds6ah0sq8	cltfmxq3300012hsdp6y7fs7e
+cltmxamlw001pjnfzr8i8vxge	cltfmpxah00007rq0y6ikmmuu	cltfrelh1006y2hsd866kcq8q	cltfmxq3300022hsdl237nczb
+cltmxamm2001rjnfz00jmgrrw	cltfmpxah00007rq0y6ikmmuu	cltfrelh1006t2hsd1trdjf12	cltfmxq3300032hsd3hvun83v
+\.
+
+
+--
+-- Data for Name: Role; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Role" (id, role, "default") FROM stdin;
+cltfn47k300072hsdcpyh0q1z	Data Science / AI	f
+cltfn47k300082hsd5twb6p8y	Microsoft Azure App Development	f
+cltfn47k300092hsdxjbu3pr2	Microsoft Azure Administration	f
+cltfn47k4000a2hsdpo4me9rl	Front-End Development	f
+cltfn47k4000b2hsdblm2ngir	Microsoft Back-End Development	f
+cltfn47k4000c2hsd3gzbt7y4	Microsoft Low Code Development	f
+cltfn47k4000d2hsdbxg169h3	Microsoft Integration Development	f
+cltfn47k4000e2hsd0vgrz9vo	Java Back-End Development	f
+cltfn47k4000f2hsdtccq2i1r	Application Architecture	f
+cltfn47k4000g2hsdyrp34990	Infrastructure Engineering	f
+cltfn47k4000h2hsdd1arf5og	Mobile Development	f
+cltfn47k4000i2hsdr2zhoqjb	WoW	f
+cltfn47k4000j2hsd7q5pf7rx	Product Owner / Analist / Requirements engineer	f
+cltfn47k300062hsd8no26vg2	Data Engineering/Data Architecture	f
+cltfn47k4000k2hsdx4ly9hje	General	t
+\.
+
+
+--
+-- Data for Name: Session; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Session" (id, "sessionToken", "userId", expires) FROM stdin;
+cltgyv0ng000gblsjj0iyo9ym	a45bebb4-137e-49c9-b28e-e255e8783155	cltgyv0mu000cblsjmjokdbei	2024-04-06 08:29:06.699
+cltn4lala0025jnfzdl8re5is	ad2b6558-ebec-40b4-82fa-c135f375fe03	cltfmpxah00007rq0y6ikmmuu	2024-04-10 15:56:07.773
+\.
+
+
+--
+-- Data for Name: Survey; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Survey" (id, "surveyName") FROM stdin;
+cltfmy5rm00052hsdjzfgqqy3	IS-tech-survey-2024
+\.
+
+
+--
+-- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."User" (id, name, email, "emailVerified", image) FROM stdin;
+cltfmpxah00007rq0y6ikmmuu	Jurre Brandsen	jurre.brandsen@infosupport.com	\N	\N
+cltgyv0mu000cblsjmjokdbei	jurrebrandsen	jurrebrandsen@hotmail.com	\N	\N
+\.
+
+
+--
+-- Data for Name: VerificationToken; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."VerificationToken" (identifier, token, expires) FROM stdin;
+\.
+
+
+--
+-- Data for Name: _QuestionToRole; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."_QuestionToRole" ("A", "B") FROM stdin;
+cltfnnpbe000r2hsdydr2l7k6	cltfn47k300062hsd8no26vg2
+cltfnnpbg000z2hsd33u6d8ix	cltfn47k300062hsd8no26vg2
+cltfnnpbg00102hsd7wdcxcrl	cltfn47k300062hsd8no26vg2
+cltfnnpbg00112hsdgnqm1q4o	cltfn47k300062hsd8no26vg2
+cltfnnpbh00172hsd5ncj4aag	cltfn47k300062hsd8no26vg2
+cltfnnpbh00192hsdy6ru3vfl	cltfn47k300062hsd8no26vg2
+cltfnnpbj001m2hsdkrsx0mg6	cltfn47k300062hsd8no26vg2
+cltfnnpbj001n2hsd7f786w79	cltfn47k300062hsd8no26vg2
+cltfnnpbk001o2hsdcl3zt0li	cltfn47k300062hsd8no26vg2
+cltfnnpbk001p2hsdrp3dlp5a	cltfn47k300062hsd8no26vg2
+cltfnnpbk001q2hsdhvi58yft	cltfn47k300062hsd8no26vg2
+cltfnzlqs00382hsdn0ecew3e	cltfn47k300062hsd8no26vg2
+cltfnnpbl001t2hsd6rac9a47	cltfn47k300062hsd8no26vg2
+cltfntib4001z2hsdd79chm43	cltfn47k300062hsd8no26vg2
+cltfntib500222hsd088bguof	cltfn47k300062hsd8no26vg2
+cltfntib500252hsdhwn6snaq	cltfn47k300062hsd8no26vg2
+cltfntib500282hsd4jrq2ihb	cltfn47k300062hsd8no26vg2
+cltfntib6002b2hsdnra35uyt	cltfn47k300062hsd8no26vg2
+cltfntib6002d2hsdirlqzh6a	cltfn47k300062hsd8no26vg2
+cltfntib6002e2hsdj3k7ysst	cltfn47k300062hsd8no26vg2
+cltfntib6002f2hsd7og4nt6c	cltfn47k300062hsd8no26vg2
+cltfntib6002g2hsd8vga0bhc	cltfn47k300062hsd8no26vg2
+cltfntib6002h2hsd1hmls8by	cltfn47k300062hsd8no26vg2
+cltfntib6002i2hsdu1tupsla	cltfn47k300062hsd8no26vg2
+cltfntib7002m2hsdcw2nu8h6	cltfn47k300062hsd8no26vg2
+cltfntiba00312hsdjlb48unb	cltfn47k300062hsd8no26vg2
+cltfntiba00342hsdev7smjj1	cltfn47k300062hsd8no26vg2
+cltfntiba00352hsdc8mhrix5	cltfn47k300062hsd8no26vg2
+cltfnzlqs00362hsdgfv4pr6a	cltfn47k300062hsd8no26vg2
+cltfnzlqs00372hsdmr8mkq7e	cltfn47k300062hsd8no26vg2
+cltfnzlqt003b2hsdpz6ojx3u	cltfn47k300062hsd8no26vg2
+cltfnzlqt003e2hsdeioiad57	cltfn47k300062hsd8no26vg2
+cltfnzlqt003f2hsdommdonz8	cltfn47k300062hsd8no26vg2
+cltfnzlqt003i2hsdj3vd4rwd	cltfn47k300062hsd8no26vg2
+cltfnzlqu003j2hsd4dubqx43	cltfn47k300062hsd8no26vg2
+cltfnzlqu003r2hsd50zo7ys9	cltfn47k300062hsd8no26vg2
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k300062hsd8no26vg2
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k300062hsd8no26vg2
+cltfnzlqv003y2hsdn70b7njn	cltfn47k300062hsd8no26vg2
+cltfnzlqv003z2hsd33mao6kd	cltfn47k300062hsd8no26vg2
+cltfnzlqv00402hsdcj37neqd	cltfn47k300062hsd8no26vg2
+cltfnzlqv00412hsd0vzpfvwi	cltfn47k300062hsd8no26vg2
+cltfnzlqv00422hsd3rgcpe6o	cltfn47k300062hsd8no26vg2
+cltfo4feb004q2hsdib5kq8bh	cltfn47k300062hsd8no26vg2
+cltfo4fec00532hsdqzowf850	cltfn47k300062hsd8no26vg2
+cltfodxje00582hsdzwrkw6w9	cltfn47k300062hsd8no26vg2
+cltfodxje005a2hsdqbxij5qr	cltfn47k300062hsd8no26vg2
+cltfodxje005b2hsdsqj6u07w	cltfn47k300062hsd8no26vg2
+cltfodxjf005f2hsdnmfz9xdc	cltfn47k300062hsd8no26vg2
+cltfodxjf005g2hsdxea7azua	cltfn47k300062hsd8no26vg2
+cltfodxjf005j2hsdnm92zxg1	cltfn47k300062hsd8no26vg2
+cltfodxjh00642hsdx6yj7h53	cltfn47k300062hsd8no26vg2
+cltfodxjh00652hsdpm11qy4e	cltfn47k300062hsd8no26vg2
+cltfrelgw00692hsd3rgucsmh	cltfn47k300062hsd8no26vg2
+cltfrelgy006h2hsd0zev99ef	cltfn47k300062hsd8no26vg2
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k300062hsd8no26vg2
+cltfn5t56000p2hsd8g9j73ak	cltfn47k300072hsdcpyh0q1z
+cltfnnpbg000z2hsd33u6d8ix	cltfn47k300072hsdcpyh0q1z
+cltfnnpbg00112hsdgnqm1q4o	cltfn47k300072hsdcpyh0q1z
+cltfnnpbi001i2hsd88khbs86	cltfn47k300072hsdcpyh0q1z
+cltfnnpbi001j2hsd7hwo4zlo	cltfn47k300072hsdcpyh0q1z
+cltfnnpbj001k2hsd0dmjtmp9	cltfn47k300072hsdcpyh0q1z
+cltfnnpbj001l2hsdohyy3yu2	cltfn47k300072hsdcpyh0q1z
+cltfnnpbk001p2hsdrp3dlp5a	cltfn47k300072hsdcpyh0q1z
+cltfntib4001z2hsdd79chm43	cltfn47k300072hsdcpyh0q1z
+cltfntib400202hsdkoq4b7ll	cltfn47k300072hsdcpyh0q1z
+cltfntib500222hsd088bguof	cltfn47k300072hsdcpyh0q1z
+cltfntib500242hsdkeifz4p2	cltfn47k300072hsdcpyh0q1z
+cltfntib500252hsdhwn6snaq	cltfn47k300072hsdcpyh0q1z
+cltfntib500282hsd4jrq2ihb	cltfn47k300072hsdcpyh0q1z
+cltfntib6002d2hsdirlqzh6a	cltfn47k300072hsdcpyh0q1z
+cltfntib6002i2hsdu1tupsla	cltfn47k300072hsdcpyh0q1z
+cltfntib7002m2hsdcw2nu8h6	cltfn47k300072hsdcpyh0q1z
+cltfntiba00312hsdjlb48unb	cltfn47k300072hsdcpyh0q1z
+cltfntiba00342hsdev7smjj1	cltfn47k300072hsdcpyh0q1z
+cltfntiba00352hsdc8mhrix5	cltfn47k300072hsdcpyh0q1z
+cltfnzlqs00382hsdn0ecew3e	cltfn47k300072hsdcpyh0q1z
+cltfnzlqt003f2hsdommdonz8	cltfn47k300072hsdcpyh0q1z
+cltfnzlqu003q2hsd87gw5egy	cltfn47k300072hsdcpyh0q1z
+cltfnzlqu003r2hsd50zo7ys9	cltfn47k300072hsdcpyh0q1z
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k300072hsdcpyh0q1z
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k300072hsdcpyh0q1z
+cltfnzlqv003y2hsdn70b7njn	cltfn47k300072hsdcpyh0q1z
+cltfnzlqv003z2hsd33mao6kd	cltfn47k300072hsdcpyh0q1z
+cltfnzlqv00402hsdcj37neqd	cltfn47k300072hsdcpyh0q1z
+cltfnzlqv00412hsd0vzpfvwi	cltfn47k300072hsdcpyh0q1z
+cltfnzlqv00492hsdjnunt6za	cltfn47k300072hsdcpyh0q1z
+cltfo4fea004j2hsd9y1ge61x	cltfn47k300072hsdcpyh0q1z
+cltfo4feb004q2hsdib5kq8bh	cltfn47k300072hsdcpyh0q1z
+cltfo4feb004r2hsd7ao1ob0p	cltfn47k300072hsdcpyh0q1z
+cltfo4feb004s2hsdmybawx5u	cltfn47k300072hsdcpyh0q1z
+cltfo4fec00532hsdqzowf850	cltfn47k300072hsdcpyh0q1z
+cltfodxje005a2hsdqbxij5qr	cltfn47k300072hsdcpyh0q1z
+cltfodxje005b2hsdsqj6u07w	cltfn47k300072hsdcpyh0q1z
+cltfodxje005c2hsdiipsminu	cltfn47k300072hsdcpyh0q1z
+cltfodxjf005f2hsdnmfz9xdc	cltfn47k300072hsdcpyh0q1z
+cltfodxjf005g2hsdxea7azua	cltfn47k300072hsdcpyh0q1z
+cltfodxjf005h2hsdr7y2oq1v	cltfn47k300072hsdcpyh0q1z
+cltfodxjf005j2hsdnm92zxg1	cltfn47k300072hsdcpyh0q1z
+cltfodxjg005x2hsdjsrz4bs0	cltfn47k300072hsdcpyh0q1z
+cltfodxjg005y2hsdoa4c7uoc	cltfn47k300072hsdcpyh0q1z
+cltfodxjh00642hsdx6yj7h53	cltfn47k300072hsdcpyh0q1z
+cltfrelgw00692hsd3rgucsmh	cltfn47k300072hsdcpyh0q1z
+cltfrelgy006g2hsdmle33kd7	cltfn47k300072hsdcpyh0q1z
+cltfrelgy006h2hsd0zev99ef	cltfn47k300072hsdcpyh0q1z
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k300072hsdcpyh0q1z
+cltfn5t55000n2hsdj47e3tbm	cltfn47k300082hsd5twb6p8y
+cltfnnpbh00172hsd5ncj4aag	cltfn47k300082hsd5twb6p8y
+cltfnnpbh00182hsd9hw1x75a	cltfn47k300082hsd5twb6p8y
+cltfnnpbh001a2hsd0fmb5jd0	cltfn47k300082hsd5twb6p8y
+cltfnnpbh001b2hsd63ja7wnf	cltfn47k300082hsd5twb6p8y
+cltfnnpbh001c2hsdtnwmjjdv	cltfn47k300082hsd5twb6p8y
+cltfnnpbi001g2hsd1u7gjj2e	cltfn47k300082hsd5twb6p8y
+cltfnnpbi001h2hsd79jp1vkk	cltfn47k300082hsd5twb6p8y
+cltfnnpbi001j2hsd7hwo4zlo	cltfn47k300082hsd5twb6p8y
+cltfnnpbj001k2hsd0dmjtmp9	cltfn47k300082hsd5twb6p8y
+cltfnnpbj001l2hsdohyy3yu2	cltfn47k300082hsd5twb6p8y
+cltfnnpbj001m2hsdkrsx0mg6	cltfn47k300082hsd5twb6p8y
+cltfnnpbk001s2hsdwrl0gzfs	cltfn47k300082hsd5twb6p8y
+cltfnnpbl001t2hsd6rac9a47	cltfn47k300082hsd5twb6p8y
+cltfnnpbl001v2hsdumwh2jd2	cltfn47k300082hsd5twb6p8y
+cltfnnpbl001w2hsdyf1gftb4	cltfn47k300082hsd5twb6p8y
+cltfnnpbl001x2hsdt3022vdl	cltfn47k300082hsd5twb6p8y
+cltfnnpbm001y2hsdg0h802c4	cltfn47k300082hsd5twb6p8y
+cltfntib4001z2hsdd79chm43	cltfn47k300082hsd5twb6p8y
+cltfntib400202hsdkoq4b7ll	cltfn47k300082hsd5twb6p8y
+cltfntib400212hsdh7cl9vy0	cltfn47k300082hsd5twb6p8y
+cltfntib500232hsd4u7lbinv	cltfn47k300082hsd5twb6p8y
+cltfntib500252hsdhwn6snaq	cltfn47k300082hsd5twb6p8y
+cltfntib500272hsdkspe9g8q	cltfn47k300082hsd5twb6p8y
+cltfntib500282hsd4jrq2ihb	cltfn47k300082hsd5twb6p8y
+cltfntib5002a2hsd8560f70u	cltfn47k300082hsd5twb6p8y
+cltfntib6002b2hsdnra35uyt	cltfn47k300082hsd5twb6p8y
+cltfntib6002d2hsdirlqzh6a	cltfn47k300082hsd5twb6p8y
+cltfntib7002m2hsdcw2nu8h6	cltfn47k300082hsd5twb6p8y
+cltfntib8002q2hsdswbhl215	cltfn47k300082hsd5twb6p8y
+cltfnzlqt003f2hsdommdonz8	cltfn47k300082hsd5twb6p8y
+cltfnzlqt003g2hsdbiqyhmod	cltfn47k300082hsd5twb6p8y
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k300082hsd5twb6p8y
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k300082hsd5twb6p8y
+cltfnzlqv003y2hsdn70b7njn	cltfn47k300082hsd5twb6p8y
+cltfnzlqv003z2hsd33mao6kd	cltfn47k300082hsd5twb6p8y
+cltfnzlqv00402hsdcj37neqd	cltfn47k300082hsd5twb6p8y
+cltfnzlqv00432hsd6ndaeds8	cltfn47k300082hsd5twb6p8y
+cltfo4fea004j2hsd9y1ge61x	cltfn47k300082hsd5twb6p8y
+cltfodxje005b2hsdsqj6u07w	cltfn47k300082hsd5twb6p8y
+cltfodxjg00612hsddrlhypq7	cltfn47k300082hsd5twb6p8y
+cltfodxjh00642hsdx6yj7h53	cltfn47k300082hsd5twb6p8y
+cltfrelgy006j2hsdhkw76gmm	cltfn47k300082hsd5twb6p8y
+cltfrheq000742hsd4mrwdfjp	cltfn47k300082hsd5twb6p8y
+cltfrheq000772hsdcd4o38c4	cltfn47k300082hsd5twb6p8y
+cltfrheq100782hsdj7ty6pqr	cltfn47k300082hsd5twb6p8y
+cltfrheq100792hsdcxlea0e8	cltfn47k300082hsd5twb6p8y
+cltfrheq1007a2hsd42ii3ks0	cltfn47k300082hsd5twb6p8y
+cltfrheq1007b2hsdrys3sbjn	cltfn47k300082hsd5twb6p8y
+cltfrheq2007k2hsdolgbssi4	cltfn47k300082hsd5twb6p8y
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k300082hsd5twb6p8y
+cltfnnpbh00162hsd67h2dpk9	cltfn47k300092hsdxjbu3pr2
+cltfnnpbh00172hsd5ncj4aag	cltfn47k300092hsdxjbu3pr2
+cltfnnpbh00182hsd9hw1x75a	cltfn47k300092hsdxjbu3pr2
+cltfnnpbi001d2hsdiiv4v4cz	cltfn47k300092hsdxjbu3pr2
+cltfnnpbi001e2hsdy1x1je4g	cltfn47k300092hsdxjbu3pr2
+cltfnnpbi001f2hsd3b1webeb	cltfn47k300092hsdxjbu3pr2
+cltfnnpbi001h2hsd79jp1vkk	cltfn47k300092hsdxjbu3pr2
+cltfnnpbk001q2hsdhvi58yft	cltfn47k300092hsdxjbu3pr2
+cltfnnpbl001u2hsdvrg3gh3g	cltfn47k300092hsdxjbu3pr2
+cltfnnpbl001v2hsdumwh2jd2	cltfn47k300092hsdxjbu3pr2
+cltfntib4001z2hsdd79chm43	cltfn47k300092hsdxjbu3pr2
+cltfntib500252hsdhwn6snaq	cltfn47k300092hsdxjbu3pr2
+cltfntib500262hsd2497z9rl	cltfn47k300092hsdxjbu3pr2
+cltfntib500282hsd4jrq2ihb	cltfn47k300092hsdxjbu3pr2
+cltfntib500292hsd84ct24fp	cltfn47k300092hsdxjbu3pr2
+cltfntib7002m2hsdcw2nu8h6	cltfn47k300092hsdxjbu3pr2
+cltfnzlqt003f2hsdommdonz8	cltfn47k300092hsdxjbu3pr2
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k300092hsdxjbu3pr2
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k300092hsdxjbu3pr2
+cltfnzlqv003y2hsdn70b7njn	cltfn47k300092hsdxjbu3pr2
+cltfnzlqv003z2hsd33mao6kd	cltfn47k300092hsdxjbu3pr2
+cltfnzlqv00432hsd6ndaeds8	cltfn47k300092hsdxjbu3pr2
+cltfo4fea004j2hsd9y1ge61x	cltfn47k300092hsdxjbu3pr2
+cltfodxje005b2hsdsqj6u07w	cltfn47k300092hsdxjbu3pr2
+cltfodxje005e2hsdyy7qrxmr	cltfn47k300092hsdxjbu3pr2
+cltfrelgy006h2hsd0zev99ef	cltfn47k300092hsdxjbu3pr2
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k300092hsdxjbu3pr2
+cltfn5t55000n2hsdj47e3tbm	cltfn47k4000a2hsdpo4me9rl
+cltfn5t55000o2hsdif3hwemz	cltfn47k4000a2hsdpo4me9rl
+cltfnnpbf000w2hsdqz3vt0z6	cltfn47k4000a2hsdpo4me9rl
+cltfnnpbf000x2hsdd0fdunr7	cltfn47k4000a2hsdpo4me9rl
+cltfnnpbg00142hsd0m2c64b9	cltfn47k4000a2hsdpo4me9rl
+cltfnnpbh00162hsd67h2dpk9	cltfn47k4000a2hsdpo4me9rl
+cltfnnpbh00172hsd5ncj4aag	cltfn47k4000a2hsdpo4me9rl
+cltfntib6002c2hsdmofe387b	cltfn47k4000a2hsdpo4me9rl
+cltfntib7002o2hsd71sl11v4	cltfn47k4000a2hsdpo4me9rl
+cltfntib8002q2hsdswbhl215	cltfn47k4000a2hsdpo4me9rl
+cltfnzlqt003f2hsdommdonz8	cltfn47k4000a2hsdpo4me9rl
+cltfnzlqt003g2hsdbiqyhmod	cltfn47k4000a2hsdpo4me9rl
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k4000a2hsdpo4me9rl
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k4000a2hsdpo4me9rl
+cltfnzlqv003y2hsdn70b7njn	cltfn47k4000a2hsdpo4me9rl
+cltfnzlqv003z2hsd33mao6kd	cltfn47k4000a2hsdpo4me9rl
+cltfnzlqv00402hsdcj37neqd	cltfn47k4000a2hsdpo4me9rl
+cltfo4feb004x2hsd4mfk33ne	cltfn47k4000a2hsdpo4me9rl
+cltfo4fec004z2hsdar49uaeo	cltfn47k4000a2hsdpo4me9rl
+cltfo4fec00512hsdas82sa6x	cltfn47k4000a2hsdpo4me9rl
+cltfodxjd00562hsdbmd2ykey	cltfn47k4000a2hsdpo4me9rl
+cltfodxjf005k2hsduojzry0d	cltfn47k4000a2hsdpo4me9rl
+cltfodxjg005t2hsdxy1579b9	cltfn47k4000a2hsdpo4me9rl
+cltfodxjg00612hsddrlhypq7	cltfn47k4000a2hsdpo4me9rl
+cltfrelgx006a2hsd790wzdfr	cltfn47k4000a2hsdpo4me9rl
+cltfrelgx006c2hsdr0jkol58	cltfn47k4000a2hsdpo4me9rl
+cltfrelgy006e2hsdgkdtgg3o	cltfn47k4000a2hsdpo4me9rl
+cltfrelgz006m2hsdplofp70n	cltfn47k4000a2hsdpo4me9rl
+cltfrelh0006o2hsdnm271352	cltfn47k4000a2hsdpo4me9rl
+cltfrelh0006p2hsdf7dgdtu1	cltfn47k4000a2hsdpo4me9rl
+cltfrelh0006s2hsdd1tr39ve	cltfn47k4000a2hsdpo4me9rl
+cltfrelh1006v2hsdkxuwxahe	cltfn47k4000a2hsdpo4me9rl
+cltfrheq000742hsd4mrwdfjp	cltfn47k4000a2hsdpo4me9rl
+cltfrheq000752hsdigu6fnmb	cltfn47k4000a2hsdpo4me9rl
+cltfrheq000762hsdq6vq4ejc	cltfn47k4000a2hsdpo4me9rl
+cltfrheq000772hsdcd4o38c4	cltfn47k4000a2hsdpo4me9rl
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000a2hsdpo4me9rl
+cltfrheq100792hsdcxlea0e8	cltfn47k4000a2hsdpo4me9rl
+cltfrheq1007a2hsd42ii3ks0	cltfn47k4000a2hsdpo4me9rl
+cltfrheq1007b2hsdrys3sbjn	cltfn47k4000a2hsdpo4me9rl
+cltfrheq1007d2hsd3aqm8an1	cltfn47k4000a2hsdpo4me9rl
+cltfrheq1007e2hsdwdc9aqbf	cltfn47k4000a2hsdpo4me9rl
+cltfrheq1007i2hsdeeh3v3oj	cltfn47k4000a2hsdpo4me9rl
+cltfrheq2007k2hsdolgbssi4	cltfn47k4000a2hsdpo4me9rl
+cltfrheq2007m2hsd7kkj6q1f	cltfn47k4000a2hsdpo4me9rl
+cltfrheq2007n2hsdorzuj5pw	cltfn47k4000a2hsdpo4me9rl
+cltfrheq2007o2hsdqmgs7vsq	cltfn47k4000a2hsdpo4me9rl
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k4000a2hsdpo4me9rl
+cltfn5t55000n2hsdj47e3tbm	cltfn47k4000b2hsdblm2ngir
+cltfnnpbg00142hsd0m2c64b9	cltfn47k4000b2hsdblm2ngir
+cltfnnpbh00172hsd5ncj4aag	cltfn47k4000b2hsdblm2ngir
+cltfntib8002q2hsdswbhl215	cltfn47k4000b2hsdblm2ngir
+cltfntiba00322hsd6szkomgv	cltfn47k4000b2hsdblm2ngir
+cltfnzlqt003f2hsdommdonz8	cltfn47k4000b2hsdblm2ngir
+cltfnzlqt003g2hsdbiqyhmod	cltfn47k4000b2hsdblm2ngir
+cltfnzlqu003l2hsdpxb7jtcg	cltfn47k4000b2hsdblm2ngir
+cltfnzlqu003m2hsdlq9zh1ae	cltfn47k4000b2hsdblm2ngir
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k4000b2hsdblm2ngir
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k4000b2hsdblm2ngir
+cltfnzlqv003y2hsdn70b7njn	cltfn47k4000b2hsdblm2ngir
+cltfnzlqv003z2hsd33mao6kd	cltfn47k4000b2hsdblm2ngir
+cltfnzlqv00402hsdcj37neqd	cltfn47k4000b2hsdblm2ngir
+cltfnzlqv00432hsd6ndaeds8	cltfn47k4000b2hsdblm2ngir
+cltfo4fea004j2hsd9y1ge61x	cltfn47k4000b2hsdblm2ngir
+cltfodxjg00612hsddrlhypq7	cltfn47k4000b2hsdblm2ngir
+cltfodxjh00642hsdx6yj7h53	cltfn47k4000b2hsdblm2ngir
+cltfodxjh00652hsdpm11qy4e	cltfn47k4000b2hsdblm2ngir
+cltfrelgy006j2hsdhkw76gmm	cltfn47k4000b2hsdblm2ngir
+cltfrelh1006w2hsd0lznvglc	cltfn47k4000b2hsdblm2ngir
+cltfrheq000742hsd4mrwdfjp	cltfn47k4000b2hsdblm2ngir
+cltfrheq000772hsdcd4o38c4	cltfn47k4000b2hsdblm2ngir
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000b2hsdblm2ngir
+cltfrheq100792hsdcxlea0e8	cltfn47k4000b2hsdblm2ngir
+cltfrheq1007a2hsd42ii3ks0	cltfn47k4000b2hsdblm2ngir
+cltfrheq1007b2hsdrys3sbjn	cltfn47k4000b2hsdblm2ngir
+cltfrheq2007k2hsdolgbssi4	cltfn47k4000b2hsdblm2ngir
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k4000b2hsdblm2ngir
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k4000c2hsd3gzbt7y4
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k4000c2hsd3gzbt7y4
+cltfnzlqv003y2hsdn70b7njn	cltfn47k4000c2hsd3gzbt7y4
+cltfnzlqv003z2hsd33mao6kd	cltfn47k4000c2hsd3gzbt7y4
+cltfnzlqv00402hsdcj37neqd	cltfn47k4000c2hsd3gzbt7y4
+cltfodxje00592hsdt4p0wu9g	cltfn47k4000c2hsd3gzbt7y4
+cltfodxjg00612hsddrlhypq7	cltfn47k4000c2hsd3gzbt7y4
+cltfrheq000742hsd4mrwdfjp	cltfn47k4000c2hsd3gzbt7y4
+cltfrheq000772hsdcd4o38c4	cltfn47k4000c2hsd3gzbt7y4
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000c2hsd3gzbt7y4
+cltfrheq100792hsdcxlea0e8	cltfn47k4000c2hsd3gzbt7y4
+cltfrheq1007a2hsd42ii3ks0	cltfn47k4000c2hsd3gzbt7y4
+cltfrheq1007b2hsdrys3sbjn	cltfn47k4000c2hsd3gzbt7y4
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k4000c2hsd3gzbt7y4
+cltfn5t55000n2hsdj47e3tbm	cltfn47k4000d2hsdbxg169h3
+cltfnnpbh00162hsd67h2dpk9	cltfn47k4000d2hsdbxg169h3
+cltfnnpbh00172hsd5ncj4aag	cltfn47k4000d2hsdbxg169h3
+cltfnnpbh001a2hsd0fmb5jd0	cltfn47k4000d2hsdbxg169h3
+cltfnnpbi001d2hsdiiv4v4cz	cltfn47k4000d2hsdbxg169h3
+cltfnnpbi001h2hsd79jp1vkk	cltfn47k4000d2hsdbxg169h3
+cltfnnpbk001s2hsdwrl0gzfs	cltfn47k4000d2hsdbxg169h3
+cltfnnpbl001t2hsd6rac9a47	cltfn47k4000d2hsdbxg169h3
+cltfnnpbl001v2hsdumwh2jd2	cltfn47k4000d2hsdbxg169h3
+cltfnnpbl001w2hsdyf1gftb4	cltfn47k4000d2hsdbxg169h3
+cltfnnpbm001y2hsdg0h802c4	cltfn47k4000d2hsdbxg169h3
+cltfntib4001z2hsdd79chm43	cltfn47k4000d2hsdbxg169h3
+cltfntib500232hsd4u7lbinv	cltfn47k4000d2hsdbxg169h3
+cltfntib500252hsdhwn6snaq	cltfn47k4000d2hsdbxg169h3
+cltfntib500272hsdkspe9g8q	cltfn47k4000d2hsdbxg169h3
+cltfntib500282hsd4jrq2ihb	cltfn47k4000d2hsdbxg169h3
+cltfntib5002a2hsd8560f70u	cltfn47k4000d2hsdbxg169h3
+cltfntib6002d2hsdirlqzh6a	cltfn47k4000d2hsdbxg169h3
+cltfntib7002m2hsdcw2nu8h6	cltfn47k4000d2hsdbxg169h3
+cltfntib8002q2hsdswbhl215	cltfn47k4000d2hsdbxg169h3
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k4000d2hsdbxg169h3
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k4000d2hsdbxg169h3
+cltfnzlqv003y2hsdn70b7njn	cltfn47k4000d2hsdbxg169h3
+cltfnzlqv003z2hsd33mao6kd	cltfn47k4000d2hsdbxg169h3
+cltfodxjg00612hsddrlhypq7	cltfn47k4000d2hsdbxg169h3
+cltfrelgy006j2hsdhkw76gmm	cltfn47k4000d2hsdbxg169h3
+cltfrheq000742hsd4mrwdfjp	cltfn47k4000d2hsdbxg169h3
+cltfrheq000772hsdcd4o38c4	cltfn47k4000d2hsdbxg169h3
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000d2hsdbxg169h3
+cltfrheq100792hsdcxlea0e8	cltfn47k4000d2hsdbxg169h3
+cltfrheq1007a2hsd42ii3ks0	cltfn47k4000d2hsdbxg169h3
+cltfrheq1007b2hsdrys3sbjn	cltfn47k4000d2hsdbxg169h3
+cltfrheq2007k2hsdolgbssi4	cltfn47k4000d2hsdbxg169h3
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k4000d2hsdbxg169h3
+cltfnnpbg000y2hsdx55m3rrf	cltfn47k4000e2hsd0vgrz9vo
+cltfnnpbg00102hsd7wdcxcrl	cltfn47k4000e2hsd0vgrz9vo
+cltfnnpbh00152hsdoc2i90nv	cltfn47k4000e2hsd0vgrz9vo
+cltfnnpbh00162hsd67h2dpk9	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqt00392hsdami0rj2x	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqt003f2hsdommdonz8	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqt003g2hsdbiqyhmod	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqu003j2hsd4dubqx43	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqu003k2hsdsvp8f5o9	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqu003u2hsdkhkuw2t1	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqv003x2hsdre0yxmu4	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqv003y2hsdn70b7njn	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqv003z2hsd33mao6kd	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqv00402hsdcj37neqd	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqv00432hsd6ndaeds8	cltfn47k4000e2hsd0vgrz9vo
+cltfnzlqv00482hsd37y2ez8b	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fe9004d2hsd9qj1wbar	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fe9004f2hsdd1hh4nhh	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fe9004h2hsd6803m922	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fea004i2hsd6jq91ba8	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fea004j2hsd9y1ge61x	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fea004m2hsd0g0om133	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fea004n2hsd5kyk9xnh	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fea004o2hsdqh0u6f52	cltfn47k4000e2hsd0vgrz9vo
+cltfo4feb004t2hsdk32gg0dx	cltfn47k4000e2hsd0vgrz9vo
+cltfo4feb004y2hsdmf4ckh9t	cltfn47k4000e2hsd0vgrz9vo
+cltfo4fec00502hsdosgu6c71	cltfn47k4000e2hsd0vgrz9vo
+cltfodxje00572hsd1hwnestx	cltfn47k4000e2hsd0vgrz9vo
+cltfodxje00582hsdzwrkw6w9	cltfn47k4000e2hsd0vgrz9vo
+cltfodxjf005i2hsdtrrhjf53	cltfn47k4000e2hsd0vgrz9vo
+cltfodxjg00612hsddrlhypq7	cltfn47k4000e2hsd0vgrz9vo
+cltfodxjg00632hsdnlsktuyt	cltfn47k4000e2hsd0vgrz9vo
+cltfodxjh00642hsdx6yj7h53	cltfn47k4000e2hsd0vgrz9vo
+cltfrelgy006h2hsd0zev99ef	cltfn47k4000e2hsd0vgrz9vo
+cltfrelgy006j2hsdhkw76gmm	cltfn47k4000e2hsd0vgrz9vo
+cltfrheq000742hsd4mrwdfjp	cltfn47k4000e2hsd0vgrz9vo
+cltfrheq000772hsdcd4o38c4	cltfn47k4000e2hsd0vgrz9vo
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000e2hsd0vgrz9vo
+cltfrheq100792hsdcxlea0e8	cltfn47k4000e2hsd0vgrz9vo
+cltfrheq1007a2hsd42ii3ks0	cltfn47k4000e2hsd0vgrz9vo
+cltfrheq1007b2hsdrys3sbjn	cltfn47k4000e2hsd0vgrz9vo
+cltfrheq2007k2hsdolgbssi4	cltfn47k4000e2hsd0vgrz9vo
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k4000e2hsd0vgrz9vo
+cltfn6fwn000q2hsdy6qc6j7f	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbe000r2hsdydr2l7k6	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbg00102hsd7wdcxcrl	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbg00132hsdk1xbyem9	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbh00162hsd67h2dpk9	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbh00172hsd5ncj4aag	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbj001m2hsdkrsx0mg6	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbk001s2hsdwrl0gzfs	cltfn47k4000f2hsdtccq2i1r
+cltfnnpbl001t2hsd6rac9a47	cltfn47k4000f2hsdtccq2i1r
+cltfntib400202hsdkoq4b7ll	cltfn47k4000f2hsdtccq2i1r
+cltfntib500252hsdhwn6snaq	cltfn47k4000f2hsdtccq2i1r
+cltfntib500272hsdkspe9g8q	cltfn47k4000f2hsdtccq2i1r
+cltfntib5002a2hsd8560f70u	cltfn47k4000f2hsdtccq2i1r
+cltfntib6002b2hsdnra35uyt	cltfn47k4000f2hsdtccq2i1r
+cltfntib8002r2hsdhvsa8eda	cltfn47k4000f2hsdtccq2i1r
+cltfntib8002t2hsdi9uggs0k	cltfn47k4000f2hsdtccq2i1r
+cltfntib9002y2hsd841jd4a8	cltfn47k4000f2hsdtccq2i1r
+cltfntib9002z2hsd6ydw0og9	cltfn47k4000f2hsdtccq2i1r
+cltfntib900302hsd4urje3pg	cltfn47k4000f2hsdtccq2i1r
+cltfntiba00312hsdjlb48unb	cltfn47k4000f2hsdtccq2i1r
+cltfntiba00322hsd6szkomgv	cltfn47k4000f2hsdtccq2i1r
+cltfnzlqt003e2hsdeioiad57	cltfn47k4000f2hsdtccq2i1r
+cltfnzlqt003i2hsdj3vd4rwd	cltfn47k4000f2hsdtccq2i1r
+cltfnzlqu003j2hsd4dubqx43	cltfn47k4000f2hsdtccq2i1r
+cltfnzlqu003k2hsdsvp8f5o9	cltfn47k4000f2hsdtccq2i1r
+cltfnzlqu003o2hsdtoye0t7b	cltfn47k4000f2hsdtccq2i1r
+cltfnzlqv00412hsd0vzpfvwi	cltfn47k4000f2hsdtccq2i1r
+cltfo4fea004j2hsd9y1ge61x	cltfn47k4000f2hsdtccq2i1r
+cltfo4feb004p2hsdmtmiv62g	cltfn47k4000f2hsdtccq2i1r
+cltfo4feb004u2hsd54fdh4tf	cltfn47k4000f2hsdtccq2i1r
+cltfo4feb004w2hsdlm7axmjr	cltfn47k4000f2hsdtccq2i1r
+cltfo4feb004y2hsdmf4ckh9t	cltfn47k4000f2hsdtccq2i1r
+cltfo4fec00522hsd61zu0t13	cltfn47k4000f2hsdtccq2i1r
+cltfodxje00582hsdzwrkw6w9	cltfn47k4000f2hsdtccq2i1r
+cltfodxje005d2hsd8mt9jm0s	cltfn47k4000f2hsdtccq2i1r
+cltfodxjf005i2hsdtrrhjf53	cltfn47k4000f2hsdtccq2i1r
+cltfodxjf005j2hsdnm92zxg1	cltfn47k4000f2hsdtccq2i1r
+cltfodxjf005n2hsd31z2v9mm	cltfn47k4000f2hsdtccq2i1r
+cltfodxjf005o2hsdgnbwdqii	cltfn47k4000f2hsdtccq2i1r
+cltfodxjg005q2hsdms1csn0n	cltfn47k4000f2hsdtccq2i1r
+cltfodxjg005v2hsd7e41l2bc	cltfn47k4000f2hsdtccq2i1r
+cltfodxjh00652hsdpm11qy4e	cltfn47k4000f2hsdtccq2i1r
+cltfrelgz006l2hsdnv4miotx	cltfn47k4000f2hsdtccq2i1r
+cltfrelh1006z2hsd7kmm50w5	cltfn47k4000f2hsdtccq2i1r
+cltfrelh200712hsdgb78da6g	cltfn47k4000f2hsdtccq2i1r
+cltfrelh200722hsdzf95tad2	cltfn47k4000f2hsdtccq2i1r
+cltfrheq1007c2hsdrkt0e7fg	cltfn47k4000f2hsdtccq2i1r
+cltfrheq1007g2hsdjn78xaj9	cltfn47k4000f2hsdtccq2i1r
+cltfrheq1007h2hsd74t7bjzh	cltfn47k4000f2hsdtccq2i1r
+cltfn6fwn000q2hsdy6qc6j7f	cltfn47k4000g2hsdyrp34990
+cltfnnpbe000r2hsdydr2l7k6	cltfn47k4000g2hsdyrp34990
+cltfnnpbg000y2hsdx55m3rrf	cltfn47k4000g2hsdyrp34990
+cltfnnpbg00102hsd7wdcxcrl	cltfn47k4000g2hsdyrp34990
+cltfnnpbg00132hsdk1xbyem9	cltfn47k4000g2hsdyrp34990
+cltfnnpbh00172hsd5ncj4aag	cltfn47k4000g2hsdyrp34990
+cltfnnpbh001a2hsd0fmb5jd0	cltfn47k4000g2hsdyrp34990
+cltfnnpbi001d2hsdiiv4v4cz	cltfn47k4000g2hsdyrp34990
+cltfnnpbi001g2hsd1u7gjj2e	cltfn47k4000g2hsdyrp34990
+cltfnnpbj001k2hsd0dmjtmp9	cltfn47k4000g2hsdyrp34990
+cltfnnpbj001l2hsdohyy3yu2	cltfn47k4000g2hsdyrp34990
+cltfnnpbk001q2hsdhvi58yft	cltfn47k4000g2hsdyrp34990
+cltfnnpbl001u2hsdvrg3gh3g	cltfn47k4000g2hsdyrp34990
+cltfnnpbl001v2hsdumwh2jd2	cltfn47k4000g2hsdyrp34990
+cltfnnpbl001x2hsdt3022vdl	cltfn47k4000g2hsdyrp34990
+cltfnnpbm001y2hsdg0h802c4	cltfn47k4000g2hsdyrp34990
+cltfntib4001z2hsdd79chm43	cltfn47k4000g2hsdyrp34990
+cltfntib400202hsdkoq4b7ll	cltfn47k4000g2hsdyrp34990
+cltfntib500252hsdhwn6snaq	cltfn47k4000g2hsdyrp34990
+cltfntib500282hsd4jrq2ihb	cltfn47k4000g2hsdyrp34990
+cltfntib500292hsd84ct24fp	cltfn47k4000g2hsdyrp34990
+cltfntib6002b2hsdnra35uyt	cltfn47k4000g2hsdyrp34990
+cltfntib6002d2hsdirlqzh6a	cltfn47k4000g2hsdyrp34990
+cltfntib7002j2hsdoe61htyo	cltfn47k4000g2hsdyrp34990
+cltfntib7002l2hsdsg22j4iz	cltfn47k4000g2hsdyrp34990
+cltfntib7002m2hsdcw2nu8h6	cltfn47k4000g2hsdyrp34990
+cltfntib7002n2hsdwx6z97t7	cltfn47k4000g2hsdyrp34990
+cltfntib8002r2hsdhvsa8eda	cltfn47k4000g2hsdyrp34990
+cltfntib8002t2hsdi9uggs0k	cltfn47k4000g2hsdyrp34990
+cltfnzlqt003c2hsdu3stgvrb	cltfn47k4000g2hsdyrp34990
+cltfnzlqt003d2hsdpc69sa70	cltfn47k4000g2hsdyrp34990
+cltfnzlqt003f2hsdommdonz8	cltfn47k4000g2hsdyrp34990
+cltfnzlqt003g2hsdbiqyhmod	cltfn47k4000g2hsdyrp34990
+cltfnzlqt003h2hsdbxzljpxp	cltfn47k4000g2hsdyrp34990
+cltfnzlqu003k2hsdsvp8f5o9	cltfn47k4000g2hsdyrp34990
+cltfnzlqv00412hsd0vzpfvwi	cltfn47k4000g2hsdyrp34990
+cltfnzlqv00432hsd6ndaeds8	cltfn47k4000g2hsdyrp34990
+cltfnzlqv00452hsd1qf2tztn	cltfn47k4000g2hsdyrp34990
+cltfo4fe9004e2hsd8snfiji2	cltfn47k4000g2hsdyrp34990
+cltfo4fe9004h2hsd6803m922	cltfn47k4000g2hsdyrp34990
+cltfo4fea004j2hsd9y1ge61x	cltfn47k4000g2hsdyrp34990
+cltfo4feb004v2hsdo3llkif7	cltfn47k4000g2hsdyrp34990
+cltfo4feb004y2hsdmf4ckh9t	cltfn47k4000g2hsdyrp34990
+cltfodxje005b2hsdsqj6u07w	cltfn47k4000g2hsdyrp34990
+cltfodxje005d2hsd8mt9jm0s	cltfn47k4000g2hsdyrp34990
+cltfodxje005e2hsdyy7qrxmr	cltfn47k4000g2hsdyrp34990
+cltfodxjf005i2hsdtrrhjf53	cltfn47k4000g2hsdyrp34990
+cltfodxjf005j2hsdnm92zxg1	cltfn47k4000g2hsdyrp34990
+cltfodxjf005o2hsdgnbwdqii	cltfn47k4000g2hsdyrp34990
+cltfodxjg005q2hsdms1csn0n	cltfn47k4000g2hsdyrp34990
+cltfodxjg005s2hsdijhsqngx	cltfn47k4000g2hsdyrp34990
+cltfodxjh00672hsdi7uo08nd	cltfn47k4000g2hsdyrp34990
+cltfrelgx006d2hsdb6vfuu65	cltfn47k4000g2hsdyrp34990
+cltfrelgy006h2hsd0zev99ef	cltfn47k4000g2hsdyrp34990
+cltfrelh0006q2hsdga5ep1v6	cltfn47k4000g2hsdyrp34990
+cltfrelh1006u2hsdua5l5bsj	cltfn47k4000g2hsdyrp34990
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k4000g2hsdyrp34990
+cltfsvfc2007q2hsdxyekmb8t	cltfn47k4000g2hsdyrp34990
+cltfn5t55000o2hsdif3hwemz	cltfn47k4000h2hsdd1arf5og
+cltfnnpbf000u2hsdac512r25	cltfn47k4000h2hsdd1arf5og
+cltfnnpbf000v2hsdj89jfhio	cltfn47k4000h2hsdd1arf5og
+cltfnnpbg00122hsdmh93qj1j	cltfn47k4000h2hsdd1arf5og
+cltfnnpbh00162hsd67h2dpk9	cltfn47k4000h2hsdd1arf5og
+cltfnzlqu003n2hsdsfdzon1z	cltfn47k4000h2hsdd1arf5og
+cltfnzlqu003s2hsdig69nt1h	cltfn47k4000h2hsdd1arf5og
+cltfnzlqv00402hsdcj37neqd	cltfn47k4000h2hsdd1arf5og
+cltfnzlqw004a2hsdygb52em1	cltfn47k4000h2hsdd1arf5og
+cltfo4fe9004c2hsdmxgd0sut	cltfn47k4000h2hsdd1arf5og
+cltfodxjf005m2hsdjb6sciqz	cltfn47k4000h2hsdd1arf5og
+cltfrheq000742hsd4mrwdfjp	cltfn47k4000h2hsdd1arf5og
+cltfrheq000772hsdcd4o38c4	cltfn47k4000h2hsdd1arf5og
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000h2hsdd1arf5og
+cltfrheq100792hsdcxlea0e8	cltfn47k4000h2hsdd1arf5og
+cltfrheq1007a2hsd42ii3ks0	cltfn47k4000h2hsdd1arf5og
+cltfrheq1007b2hsdrys3sbjn	cltfn47k4000h2hsdd1arf5og
+cltfrheq2007k2hsdolgbssi4	cltfn47k4000h2hsdd1arf5og
+cltfrheq2007l2hsdkkcwbb3t	cltfn47k4000h2hsdd1arf5og
+cltfn5t55000l2hsdp3w3vluz	cltfn47k4000i2hsdr2zhoqjb
+cltfnnpbe000t2hsdwfy8bh6g	cltfn47k4000i2hsdr2zhoqjb
+cltfntib7002k2hsdgz35yes1	cltfn47k4000i2hsdr2zhoqjb
+cltfntib8002p2hsdruczbbsn	cltfn47k4000i2hsdr2zhoqjb
+cltfnzlqu003t2hsdimq2whfr	cltfn47k4000i2hsdr2zhoqjb
+cltfnzlqv00442hsdl4e1csq5	cltfn47k4000i2hsdr2zhoqjb
+cltfnzlqv00462hsddfd9pbws	cltfn47k4000i2hsdr2zhoqjb
+cltfnzlqw004b2hsduqcutrn1	cltfn47k4000i2hsdr2zhoqjb
+cltfo4fea004k2hsd1hyzozn4	cltfn47k4000i2hsdr2zhoqjb
+cltfodxjf005o2hsdgnbwdqii	cltfn47k4000i2hsdr2zhoqjb
+cltfodxjf005p2hsdya7fr1jl	cltfn47k4000i2hsdr2zhoqjb
+cltfodxjg005q2hsdms1csn0n	cltfn47k4000i2hsdr2zhoqjb
+cltfodxjg005r2hsdbz8xbtb2	cltfn47k4000i2hsdr2zhoqjb
+cltfodxjh00662hsdakxpkl6m	cltfn47k4000i2hsdr2zhoqjb
+cltfrelgy006i2hsd0ctlz2te	cltfn47k4000i2hsdr2zhoqjb
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000i2hsdr2zhoqjb
+cltfrheq1007c2hsdrkt0e7fg	cltfn47k4000i2hsdr2zhoqjb
+cltfrheq1007f2hsd2460znen	cltfn47k4000i2hsdr2zhoqjb
+cltfrheq1007j2hsdxlnoxoid	cltfn47k4000i2hsdr2zhoqjb
+cltfrk1ng007p2hsd43ibvpi8	cltfn47k4000i2hsdr2zhoqjb
+cltfntib9002z2hsd6ydw0og9	cltfn47k4000j2hsd7q5pf7rx
+cltfrelh1006x2hsdn28ne8a8	cltfn47k4000j2hsd7q5pf7rx
+cltfrelh200702hsdmnwrbdf4	cltfn47k4000j2hsd7q5pf7rx
+cltfrheq000732hsdqcc0pyag	cltfn47k4000j2hsd7q5pf7rx
+cltfrheq100782hsdj7ty6pqr	cltfn47k4000j2hsd7q5pf7rx
+cltfn5t55000m2hsdw63cj7sg	cltfn47k4000k2hsdx4ly9hje
+cltfn6fwn000q2hsdy6qc6j7f	cltfn47k4000k2hsdx4ly9hje
+cltfnnpbe000s2hsdjaexusec	cltfn47k4000k2hsdx4ly9hje
+cltfntib8002s2hsd69ompigw	cltfn47k4000k2hsdx4ly9hje
+cltfntib8002t2hsdi9uggs0k	cltfn47k4000k2hsdx4ly9hje
+cltfntib8002u2hsdys0z8wun	cltfn47k4000k2hsdx4ly9hje
+cltfntib9002v2hsdqp9ktdmt	cltfn47k4000k2hsdx4ly9hje
+cltfntib9002w2hsdbywzh85r	cltfn47k4000k2hsdx4ly9hje
+cltfntib9002x2hsdu01ms9xe	cltfn47k4000k2hsdx4ly9hje
+cltfntiba00312hsdjlb48unb	cltfn47k4000k2hsdx4ly9hje
+cltfnzlqt003a2hsd87d5vhov	cltfn47k4000k2hsdx4ly9hje
+cltfnzlqu003p2hsdq9hif2go	cltfn47k4000k2hsdx4ly9hje
+cltfnzlqv003v2hsds6ah0sq8	cltfn47k4000k2hsdx4ly9hje
+cltfnzlqv003w2hsdpasbl7gz	cltfn47k4000k2hsdx4ly9hje
+cltfnzlqv00472hsd5yyuyusd	cltfn47k4000k2hsdx4ly9hje
+cltfo4fe9004g2hsdrz9085nz	cltfn47k4000k2hsdx4ly9hje
+cltfo4fea004l2hsdx2d6gycg	cltfn47k4000k2hsdx4ly9hje
+cltfo4fec00542hsd0ndf832g	cltfn47k4000k2hsdx4ly9hje
+cltfodxjd00552hsd03du0cv9	cltfn47k4000k2hsdx4ly9hje
+cltfodxjg005u2hsd4w10qub1	cltfn47k4000k2hsdx4ly9hje
+cltfodxjg005w2hsdj9achl4i	cltfn47k4000k2hsdx4ly9hje
+cltfodxjg005z2hsdy1jlqiyo	cltfn47k4000k2hsdx4ly9hje
+cltfodxjg00602hsdkvdzyuta	cltfn47k4000k2hsdx4ly9hje
+cltfodxjg00622hsdec8czddn	cltfn47k4000k2hsdx4ly9hje
+cltfodxjh00642hsdx6yj7h53	cltfn47k4000k2hsdx4ly9hje
+cltfrelgx006b2hsduta0x5sb	cltfn47k4000k2hsdx4ly9hje
+cltfrelgy006f2hsd5jcf716k	cltfn47k4000k2hsdx4ly9hje
+cltfrelgz006k2hsd5gb10s2k	cltfn47k4000k2hsdx4ly9hje
+cltfrelgz006n2hsd15h7pi0o	cltfn47k4000k2hsdx4ly9hje
+cltfrelh1006t2hsd1trdjf12	cltfn47k4000k2hsdx4ly9hje
+cltfrelh1006w2hsd0lznvglc	cltfn47k4000k2hsdx4ly9hje
+cltfrelh1006y2hsd866kcq8q	cltfn47k4000k2hsdx4ly9hje
+cltfntiba00332hsdaj1d98bq	cltfn47k300072hsdcpyh0q1z
+cltfodxjh00682hsdnbe5jymc	cltfn47k4000i2hsdr2zhoqjb
+cltfnnpbi001d2hsdiiv4v4cz	cltfn47k300082hsd5twb6p8y
+cltfntib7002j2hsdoe61htyo	cltfn47k300082hsd5twb6p8y
+cltfrheq2007k2hsdolgbssi4	cltfn47k4000c2hsd3gzbt7y4
+cltfnzlqv00402hsdcj37neqd	cltfn47k4000f2hsdtccq2i1r
+cltfodxjh00652hsdpm11qy4e	cltfn47k4000g2hsdyrp34990
+\.
+
+
+--
+-- Data for Name: _UserRole; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."_UserRole" ("A", "B") FROM stdin;
+cltfn47k300062hsd8no26vg2	cltgyv0mu000cblsjmjokdbei
+cltfn47k300072hsdcpyh0q1z	cltgyv0mu000cblsjmjokdbei
+cltfn47k300082hsd5twb6p8y	cltgyv0mu000cblsjmjokdbei
+cltfn47k4000k2hsdx4ly9hje	cltgyv0mu000cblsjmjokdbei
+cltfn47k300062hsd8no26vg2	cltfmpxah00007rq0y6ikmmuu
+cltfn47k300072hsdcpyh0q1z	cltfmpxah00007rq0y6ikmmuu
+cltfn47k300082hsd5twb6p8y	cltfmpxah00007rq0y6ikmmuu
+cltfn47k300092hsdxjbu3pr2	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000a2hsdpo4me9rl	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000b2hsdblm2ngir	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000c2hsd3gzbt7y4	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000d2hsdbxg169h3	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000e2hsd0vgrz9vo	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000f2hsdtccq2i1r	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000g2hsdyrp34990	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000h2hsdd1arf5og	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000i2hsdr2zhoqjb	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000j2hsd7q5pf7rx	cltfmpxah00007rq0y6ikmmuu
+cltfn47k4000k2hsdx4ly9hje	cltfmpxah00007rq0y6ikmmuu
+\.
+
+
+--
+-- Data for Name: _prisma_migrations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public._prisma_migrations (id, checksum, finished_at, migration_name, logs, rolled_back_at, started_at, applied_steps_count) FROM stdin;
+2901d333-2d65-4f61-964d-cf3d6f111292	a7b1a0ef7dee76d41efcd60391fd2719bdd401278eb92034efbeb96d1c0cd146	2024-03-06 14:22:14.519294+00	0_init_migration		\N	2024-03-06 14:22:14.519294+00	0
+\.
+
+
+--
+-- Name: Account Account_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Account"
+    ADD CONSTRAINT "Account_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: AnswerOption AnswerOption_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."AnswerOption"
+    ADD CONSTRAINT "AnswerOption_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: QuestionResult QuestionResult_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."QuestionResult"
+    ADD CONSTRAINT "QuestionResult_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Question Question_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Question"
+    ADD CONSTRAINT "Question_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Role Role_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Role"
+    ADD CONSTRAINT "Role_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Session Session_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Survey Survey_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Survey"
+    ADD CONSTRAINT "Survey_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: _prisma_migrations _prisma_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public._prisma_migrations
+    ADD CONSTRAINT _prisma_migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: Account_provider_providerAccountId_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON public."Account" USING btree (provider, "providerAccountId");
+
+
+--
+-- Name: Session_sessionToken_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON public."Session" USING btree ("sessionToken");
+
+
+--
+-- Name: Survey_surveyName_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "Survey_surveyName_key" ON public."Survey" USING btree ("surveyName");
+
+
+--
+-- Name: User_email_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "User_email_key" ON public."User" USING btree (email);
+
+
+--
+-- Name: VerificationToken_identifier_token_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON public."VerificationToken" USING btree (identifier, token);
+
+
+--
+-- Name: VerificationToken_token_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON public."VerificationToken" USING btree (token);
+
+
+--
+-- Name: _QuestionToRole_AB_unique; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "_QuestionToRole_AB_unique" ON public."_QuestionToRole" USING btree ("A", "B");
+
+
+--
+-- Name: _QuestionToRole_B_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "_QuestionToRole_B_index" ON public."_QuestionToRole" USING btree ("B");
+
+
+--
+-- Name: _UserRole_AB_unique; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "_UserRole_AB_unique" ON public."_UserRole" USING btree ("A", "B");
+
+
+--
+-- Name: _UserRole_B_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "_UserRole_B_index" ON public."_UserRole" USING btree ("B");
+
+
+--
+-- Name: Account Account_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Account"
+    ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: QuestionResult QuestionResult_answerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."QuestionResult"
+    ADD CONSTRAINT "QuestionResult_answerId_fkey" FOREIGN KEY ("answerId") REFERENCES public."AnswerOption"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: QuestionResult QuestionResult_questionId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."QuestionResult"
+    ADD CONSTRAINT "QuestionResult_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES public."Question"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: QuestionResult QuestionResult_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."QuestionResult"
+    ADD CONSTRAINT "QuestionResult_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Question Question_surveyId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Question"
+    ADD CONSTRAINT "Question_surveyId_fkey" FOREIGN KEY ("surveyId") REFERENCES public."Survey"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Session Session_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: _QuestionToRole _QuestionToRole_A_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."_QuestionToRole"
+    ADD CONSTRAINT "_QuestionToRole_A_fkey" FOREIGN KEY ("A") REFERENCES public."Question"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: _QuestionToRole _QuestionToRole_B_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."_QuestionToRole"
+    ADD CONSTRAINT "_QuestionToRole_B_fkey" FOREIGN KEY ("B") REFERENCES public."Role"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: _UserRole _UserRole_A_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."_UserRole"
+    ADD CONSTRAINT "_UserRole_A_fkey" FOREIGN KEY ("A") REFERENCES public."Role"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: _UserRole _UserRole_B_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."_UserRole"
+    ADD CONSTRAINT "_UserRole_B_fkey" FOREIGN KEY ("B") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
