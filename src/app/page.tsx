@@ -33,7 +33,7 @@ const Home: React.FC = async () => {
       </div>
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl">
-          <span className="text-infoSupport">InfoSupport</span> Tech Survey
+          <span className="text-custom-primary">InfoSupport</span> Tech Survey
         </h1>
         {!session && (
           <div>
@@ -66,7 +66,9 @@ const Home: React.FC = async () => {
               userSelectedRoles={userSelectedRoles}
             />
             <Link href="/survey/general" passHref>
-              <Button>{">"} Go to survey</Button>
+              <Button className="bg-custom-secondary dark:bg-custom-primary">
+                {">"} Go to survey
+              </Button>
             </Link>
           </div>
         )}

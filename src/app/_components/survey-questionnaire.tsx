@@ -69,6 +69,7 @@ export function SurveyQuestionnaire({
       ) && selectedRoles.includes(slugToId[currentRole ?? ""] ?? ""),
   );
 
+  // TODO: pak grootte van het scherm
   function isMobileDevice() {
     if (typeof window === "undefined") {
       return false; // Not running in a browser environment
@@ -166,8 +167,8 @@ export function SurveyQuestionnaire({
       id: role.id,
       href: `/survey/${slugify(role.role)}`,
       label: role.role,
-      current: role.role === currentRole,
-      completed: true,
+      current: slugify(role.role) === currentRole,
+      completed: false,
     }));
 
   console.log("Sections:", selectedRolesForProgressBar);

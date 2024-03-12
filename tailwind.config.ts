@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -19,6 +19,11 @@ const config = {
     },
     extend: {
       colors: {
+        custom: {
+          primary: "#00A3E0",
+          secondary: "#003865",
+        },
+        // Your existing color definitions...
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -75,6 +80,6 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+};
 
 export default config;

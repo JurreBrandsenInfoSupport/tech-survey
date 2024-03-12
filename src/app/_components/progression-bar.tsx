@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Fragment } from "react";
+import { type Section } from "~/models/types";
 
-const ProgressionBar = ({ roles }: { roles: any[] }) => {
+const ProgressionBar = ({ roles }: { roles: Section[] }) => {
   const totalroles = roles.length;
   const completedroles = roles.filter((section) => section.completed).length;
   const progressPercentage = (completedroles / totalroles) * 100;
@@ -39,7 +40,7 @@ const ProgressionBar = ({ roles }: { roles: any[] }) => {
               {/* Line (except for the last section) */}
               {index !== roles.length - 1 && (
                 <div
-                  className={`mx-2 h-0.5 flex-1 ${section.completed && roles[index + 1].completed ? "bg-green-500" : "bg-gray-300"}`}
+                  className={`mx-2 h-0.5 flex-1 ${section.completed && roles[index + 1]?.completed ? "bg-green-500" : "bg-gray-300"}`}
                 ></div>
               )}
             </Fragment>

@@ -36,3 +36,11 @@ export interface User {
   id: string;
   // Add more properties as needed
 }
+
+export interface Section {
+  id: string;
+  href: string;
+  label: string;
+  current: boolean;
+  completed: boolean;
+}
