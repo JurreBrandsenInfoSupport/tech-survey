@@ -40,6 +40,7 @@ import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
 
 import Navigation from "./progression-bar";
+import Link from "next/link";
 
 export function SurveyQuestionnaire({
   session,
@@ -141,7 +142,7 @@ export function SurveyQuestionnaire({
     resolver: zodResolver(FormSchema),
   });
 
-  function onSubmit() {
+  async function onSubmit() {
     const mappedResponses = Object.entries(responses).map(
       ([questionId, answerId]) => ({
         userId: session?.user.id,
@@ -159,21 +160,44 @@ export function SurveyQuestionnaire({
       return;
     }
 
-    // Mutating responses for each question
-    mappedResponses.forEach((response) => submitResponse.mutate(response));
+    try {
+      // Submitting responses for each question
+      await Promise.all(
+        mappedResponses.map((response) => submitResponse.mutateAsync(response)),
+      );
 
-    toast({
-      title: "Success!",
-      description: "Your survey has been submitted.",
-    });
+      // Navigate to the next role
+      const nextHref = getNextHref();
+      if (nextHref) {
+        window.location.assign(nextHref);
+      } else {
+        toast({
+          title: "Success!",
+          description: "Your survey has been submitted.",
+        });
+        // wait for 2 seconds before redirecting to the thank you page
+        setTimeout(() => {
+          window.location.assign("/survey/thank-you");
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Error submitting responses:", error);
+      toast({
+        title: "Error!",
+        description: "An error occurred while submitting the survey responses.",
+        variant: "destructive",
+      });
+    }
   }
 
   const submitResponse = api.survey.setQuestionResult.useMutation({
     onSuccess: () => {
       console.log("Response submitted successfully");
+      return true;
     },
     onError: (error) => {
       console.error("Error submitting response:", error);
+      return false;
     },
   });
 
@@ -198,6 +222,14 @@ export function SurveyQuestionnaire({
         questions,
       ),
     }));
+
+  function getNextHref() {
+    // lookup the current index of the current role
+    const index = selectedRolesForProgressBar.findIndex(
+      (role) => role.current === true,
+    );
+    return selectedRolesForProgressBar[index + 1]?.href;
+  }
 
   console.log("Sections:", selectedRolesForProgressBar);
 
@@ -283,7 +315,7 @@ export function SurveyQuestionnaire({
               ))}
             </TableBody>
           </Table>
-          <Button type="submit">Submit</Button>
+          <Button type="submit">{getNextHref() ? "Next" : "Submit"}</Button>
         </form>
       </Form>
     </div>
