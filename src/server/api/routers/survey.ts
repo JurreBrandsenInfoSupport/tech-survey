@@ -111,16 +111,72 @@ export const surveyRouter = createTRPCRouter({
         answerId: z.string(),
       }),
     )
+    // create new or update an existing answer
     .mutation(async ({ ctx, input }) => {
-      console.log("Received input:", input); // Debug console log
-      const questionResult = await ctx.db.questionResult.create({
-        data: {
-          userId: input.userId,
-          questionId: input.questionId,
-          answerId: input.answerId,
+      const { userId, questionId, answerId } = input;
+
+      // find the question
+      const question = await ctx.db.question.findUnique({
+        where: {
+          id: questionId,
         },
       });
-      console.log("Question result created:", questionResult); // Debug console log
-      return questionResult;
+
+      if (!question) {
+        throw new Error("Question not found");
+      }
+
+      // find the answer
+      const answerOption = await ctx.db.answerOption.findUnique({
+        where: {
+          id: answerId,
+        },
+      });
+
+      if (!answerOption) {
+        throw new Error("Answer not found");
+      }
+
+      // find the user
+      const user = await ctx.db.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // find the existing answer
+      const existingAnswer = await ctx.db.questionResult.findFirst({
+        where: {
+          userId,
+          questionId,
+        },
+      });
+
+      if (existingAnswer) {
+        // update the existing answer
+        await ctx.db.questionResult.update({
+          where: {
+            id: existingAnswer.id,
+          },
+          data: {
+            answerId,
+          },
+        });
+        console.log("Updated answer");
+      } else {
+        // create a new answer
+        await ctx.db.questionResult.create({
+          data: {
+            userId,
+            questionId,
+            answerId,
+          },
+        });
+      }
+      console.log("Created answer");
     }),
 });

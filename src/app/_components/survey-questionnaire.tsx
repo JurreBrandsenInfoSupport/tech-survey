@@ -6,7 +6,7 @@ import {
   type Question,
   type QuestionResult,
 } from "~/models/types";
-import { useRouter, usePathname, notFound } from "next/navigation";
+import { usePathname, notFound } from "next/navigation";
 import { useState } from "react";
 
 import { api } from "~/trpc/react";
@@ -71,7 +71,7 @@ export function SurveyQuestionnaire({
 
   const filteredQuestions = questions.filter(
     (question) =>
-      question.roleIds.some(
+      question.roleIds?.some(
         (roleId) => roleId === slugToId[currentRole ?? ""],
       ) && selectedRoles.includes(slugToId[currentRole ?? ""] ?? ""),
   );
@@ -93,43 +93,21 @@ export function SurveyQuestionnaire({
     roleId: string,
     questions: Question[],
   ) {
-    console.log("-------------------");
-
     const questionsForRole = userAnswersForRole.filter((answer) =>
       answer.question.roles?.some((role) => role.id === roleId),
     );
 
-    console.log("Questions for role:", questionsForRole);
-
     const totalQuestionsForRole = questions.filter((question) =>
-      question.roleIds.some((role) => role === roleId),
+      question.roleIds?.some((role) => role === roleId),
     ).length;
-
-    console.log("Total questions for role:", totalQuestionsForRole);
 
     const answeredQuestionsForRole = questionsForRole.filter(
       (answer) => answer.answerId !== undefined,
     );
 
-    console.log(
-      "Answered questions for role:",
-      answeredQuestionsForRole.length,
-    );
-
     return answeredQuestionsForRole.length >= totalQuestionsForRole;
   }
 
-  // debug check for all roles if a user has more than 1 response for a question
-  userSelectedRoles.forEach((role) => {
-    console.log(
-      "Role:",
-      role.role,
-      "Has completed all questions:",
-      hasAnsweredAllQuestionsForRole(userAnswersForRole, role.id, questions),
-    );
-  });
-
-  const router = useRouter();
   const isMobile = isMobileDevice();
 
   const handleResponseSelection = (questionId: string, answerId: string) => {
@@ -191,11 +169,8 @@ export function SurveyQuestionnaire({
   }
 
   const submitResponse = api.survey.setQuestionResult.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       console.log("Response submitted successfully");
-      console.log("Response data:", data);
-      router.refresh();
-      setResponses({});
     },
     onError: (error) => {
       console.error("Error submitting response:", error);

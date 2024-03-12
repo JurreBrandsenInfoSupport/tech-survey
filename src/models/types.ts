@@ -32,7 +32,6 @@ export interface QuestionResult {
 
 export interface User {
   id: string;
-  // Add more properties as needed
 }
 
 export interface Section {
