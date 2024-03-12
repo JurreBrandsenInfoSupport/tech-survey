@@ -203,12 +203,20 @@ export function SurveyQuestionnaire({
                   name={question.id}
                   key={`${question.id}`}
                   render={({ field }) => (
-                    <TableRow key={question.id}>
+                    <TableRow
+                      key={question.id}
+                      className={
+                        form.formState.errors[question.id]
+                          ? "!border-2 !border-dashed !border-red-500"
+                          : ""
+                      }
+                    >
+                      {" "}
+                      {/* add a dashed border of 1px in color red in case of validatio error */}
                       <TableCell>
                         {question.questionText}
                         <FormMessage />
                       </TableCell>
-
                       {answerOptions.map((option) => (
                         <TableCell key={option.id}>
                           <FormItem>

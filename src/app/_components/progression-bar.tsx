@@ -24,7 +24,13 @@ const ProgressionBar = ({ roles }: { roles: Section[] }) => {
                 className="relative flex items-center justify-center"
               >
                 <div
-                  className={`mb-1 h-6 w-6 rounded-full border-2 ${section.completed ? "border-green-500 bg-green-500" : "border-gray-300"}`}
+                  className={`mb-1 h-6 w-6 rounded-full border-2 ${
+                    section.current
+                      ? "border-custom-secondary bg-custom-primary"
+                      : section.completed
+                        ? "border-green-500 bg-green-500"
+                        : "border-gray-300"
+                  }`}
                 ></div>
                 <div
                   className="absolute -rotate-45 whitespace-nowrap text-xs font-semibold"
@@ -40,7 +46,11 @@ const ProgressionBar = ({ roles }: { roles: Section[] }) => {
               {/* Line (except for the last section) */}
               {index !== roles.length - 1 && (
                 <div
-                  className={`mx-2 h-0.5 flex-1 ${section.completed && roles[index + 1]?.completed ? "bg-green-500" : "bg-gray-300"}`}
+                  className={`mx-2 h-0.5 flex-1 ${
+                    section.completed && roles[index + 1]?.completed
+                      ? "bg-green-500"
+                      : "bg-gray-300"
+                  }`}
                 ></div>
               )}
             </Fragment>

@@ -22,6 +22,8 @@ const config: Config = {
         custom: {
           primary: "#00A3E0",
           secondary: "#003865",
+          buttonPrimary: "#bed62f",
+          buttonHover: "#d0e26a",
         },
         // Your existing color definitions...
         border: "hsl(var(--border))",
