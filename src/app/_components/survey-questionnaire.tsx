@@ -7,11 +7,11 @@ import {
   type QuestionResult,
 } from "~/models/types";
 import { usePathname, notFound } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
-import { idToTextMap, idToTextMapMobile } from "~/utils/optionMapping";
+import { idToTextMap } from "~/utils/optionMapping";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -40,7 +40,6 @@ import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
 
 import Navigation from "./progression-bar";
-import Link from "next/link";
 
 export function SurveyQuestionnaire({
   session,
@@ -59,7 +58,6 @@ export function SurveyQuestionnaire({
   const [selectedRoles] = useState<string[]>(
     userSelectedRoles.map((role) => role.id),
   );
-
   const pathname = usePathname() || "";
 
   // get the current role from the url, which is /survey/[role]
@@ -68,7 +66,20 @@ export function SurveyQuestionnaire({
     notFound();
   }
 
-  console.log("Selected roles:", selectedRoles);
+  type InitialResponses = Record<string, string>;
+
+  useEffect(() => {
+    // Populate responses with previous answers for the current role when component mounts
+    const initialResponses: InitialResponses = {};
+    userAnswersForRole.forEach((answer) => {
+      if (
+        answer.question.roles?.some((role) => role.id === slugToId[currentRole])
+      ) {
+        initialResponses[answer.question.id] = answer.answerId;
+      }
+    });
+    setResponses(initialResponses);
+  }, [userAnswersForRole, currentRole]);
 
   const filteredQuestions = questions.filter(
     (question) =>
@@ -76,17 +87,6 @@ export function SurveyQuestionnaire({
         (roleId) => roleId === slugToId[currentRole ?? ""],
       ) && selectedRoles.includes(slugToId[currentRole ?? ""] ?? ""),
   );
-
-  // TODO: pak grootte van het scherm
-  function isMobileDevice() {
-    if (typeof window === "undefined") {
-      return false; // Not running in a browser environment
-    }
-    const userAgent = window.navigator.userAgent;
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      userAgent,
-    );
-  }
 
   // function that check if a user already has more than 1 response for a question
   function hasAnsweredAllQuestionsForRole(
@@ -109,12 +109,11 @@ export function SurveyQuestionnaire({
     return answeredQuestionsForRole.length >= totalQuestionsForRole;
   }
 
-  const isMobile = isMobileDevice();
+  const unansweredQuestions = filteredQuestions.filter(
+    (question) => !responses[question.id],
+  );
 
   const handleResponseSelection = (questionId: string, answerId: string) => {
-    console.log("Question ID:", questionId);
-    console.log("Answer ID:", answerId);
-
     setResponses((prevResponses) => ({
       ...prevResponses,
       [questionId]: answerId,
@@ -123,8 +122,9 @@ export function SurveyQuestionnaire({
 
   type QuestionSchema = Record<string, z.ZodEnum<[string, ...string[]]>>;
 
+  // look at the responses to create validation schema
   const FormSchema = z.object(
-    filteredQuestions.reduce<QuestionSchema>((schema, question) => {
+    unansweredQuestions.reduce<QuestionSchema>((schema, question) => {
       // Add a validation rule for each question ID
       return {
         ...schema,
@@ -231,8 +231,6 @@ export function SurveyQuestionnaire({
     return selectedRolesForProgressBar[index + 1]?.href;
   }
 
-  console.log("Sections:", selectedRolesForProgressBar);
-
   return (
     <div>
       <div>
@@ -249,9 +247,7 @@ export function SurveyQuestionnaire({
                 <TableHead className="w-[200px]">Question</TableHead>
                 {answerOptions.map((option) => (
                   <TableHead key={option.id}>
-                    {isMobile
-                      ? idToTextMapMobile[option.option]
-                      : idToTextMap[option.option]}
+                    {idToTextMap[option.option]}
                   </TableHead>
                 ))}
               </TableRow>
@@ -271,8 +267,7 @@ export function SurveyQuestionnaire({
                           : ""
                       }
                     >
-                      {" "}
-                      {/* add a dashed border of 1px in color red in case of validatio error */}
+                      {/* add a dashed border of 1px in color red in case of validation error */}
                       <TableCell>
                         {question.questionText}
                         <FormMessage />
@@ -293,14 +288,10 @@ export function SurveyQuestionnaire({
                                   <FormControl>
                                     <RadioGroupItem
                                       value={option.id}
-                                      onChange={() => {
-                                        field.onChange(option.id);
-                                        handleResponseSelection(
-                                          question.id,
-                                          option.id,
-                                        );
-                                      }}
-                                      checked={field.value === option.id}
+                                      checked={
+                                        field.value === option.id ||
+                                        responses[question.id] === option.id
+                                      }
                                     />
                                   </FormControl>
                                 </label>
