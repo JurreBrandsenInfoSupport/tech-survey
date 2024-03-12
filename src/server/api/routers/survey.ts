@@ -4,6 +4,9 @@ import { type Role } from "~/models/types";
 
 export const surveyRouter = createTRPCRouter({
   getQuestions: publicProcedure.query(async ({ ctx }) => {
+    // wait 2 seconds to simulate a slow API
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     // get all questions and also the roles associated with each question
     const questions = await ctx.db.question.findMany({
       include: {
