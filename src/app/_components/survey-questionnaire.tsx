@@ -1,12 +1,17 @@
 "use client";
 
-import { type Role, type AnswerOption, type Question } from "~/models/types";
-import { useRouter, usePathname, notFound } from "next/navigation";
-import { useState } from "react";
+import {
+  type Role,
+  type AnswerOption,
+  type Question,
+  type QuestionResult,
+} from "~/models/types";
+import { usePathname, notFound } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
-import { idToTextMap, idToTextMapMobile } from "~/utils/optionMapping";
+import { idToTextMap } from "~/utils/optionMapping";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -41,17 +46,18 @@ export function SurveyQuestionnaire({
   questions,
   answerOptions,
   userSelectedRoles,
+  userAnswersForRole,
 }: {
   session: Session;
   questions: Question[];
   answerOptions: AnswerOption[];
   userSelectedRoles: Role[];
+  userAnswersForRole: QuestionResult[];
 }) {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [selectedRoles] = useState<string[]>(
     userSelectedRoles.map((role) => role.id),
   );
-
   const pathname = usePathname() || "";
 
   // get the current role from the url, which is /survey/[role]
@@ -60,32 +66,54 @@ export function SurveyQuestionnaire({
     notFound();
   }
 
-  console.log("Selected roles:", selectedRoles);
+  type InitialResponses = Record<string, string>;
+
+  useEffect(() => {
+    // Populate responses with previous answers for the current role when component mounts
+    const initialResponses: InitialResponses = {};
+    userAnswersForRole.forEach((answer) => {
+      if (
+        answer.question.roles?.some((role) => role.id === slugToId[currentRole])
+      ) {
+        initialResponses[answer.question.id] = answer.answerId;
+      }
+    });
+    setResponses(initialResponses);
+  }, [userAnswersForRole, currentRole]);
 
   const filteredQuestions = questions.filter(
     (question) =>
-      question.roleIds.some(
+      question.roleIds?.some(
         (roleId) => roleId === slugToId[currentRole ?? ""],
       ) && selectedRoles.includes(slugToId[currentRole ?? ""] ?? ""),
   );
 
-  function isMobileDevice() {
-    if (typeof window === "undefined") {
-      return false; // Not running in a browser environment
-    }
-    const userAgent = window.navigator.userAgent;
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      userAgent,
+  // function that check if a user already has more than 1 response for a question
+  function hasAnsweredAllQuestionsForRole(
+    userAnswersForRole: QuestionResult[],
+    roleId: string,
+    questions: Question[],
+  ) {
+    const questionsForRole = userAnswersForRole.filter((answer) =>
+      answer.question.roles?.some((role) => role.id === roleId),
     );
+
+    const totalQuestionsForRole = questions.filter((question) =>
+      question.roleIds?.some((role) => role === roleId),
+    ).length;
+
+    const answeredQuestionsForRole = questionsForRole.filter(
+      (answer) => answer.answerId !== undefined,
+    );
+
+    return answeredQuestionsForRole.length >= totalQuestionsForRole;
   }
 
-  const router = useRouter();
-  const isMobile = isMobileDevice();
+  const unansweredQuestions = filteredQuestions.filter(
+    (question) => !responses[question.id],
+  );
 
   const handleResponseSelection = (questionId: string, answerId: string) => {
-    console.log("Question ID:", questionId);
-    console.log("Answer ID:", answerId);
-
     setResponses((prevResponses) => ({
       ...prevResponses,
       [questionId]: answerId,
@@ -94,15 +122,16 @@ export function SurveyQuestionnaire({
 
   type QuestionSchema = Record<string, z.ZodEnum<[string, ...string[]]>>;
 
+  // look at the responses to create validation schema
   const FormSchema = z.object(
-    filteredQuestions.reduce<QuestionSchema>((schema, question) => {
+    unansweredQuestions.reduce<QuestionSchema>((schema, question) => {
       // Add a validation rule for each question ID
       return {
         ...schema,
         [question.id]: z.enum(
           [question.id, ...answerOptions.map((option) => option.id)],
           {
-            required_error: `You need to select an answer for "${question.questionText}"`,
+            required_error: `You need to select an answer`,
           },
         ),
       };
@@ -113,7 +142,7 @@ export function SurveyQuestionnaire({
     resolver: zodResolver(FormSchema),
   });
 
-  function onSubmit() {
+  async function onSubmit() {
     const mappedResponses = Object.entries(responses).map(
       ([questionId, answerId]) => ({
         userId: session?.user.id,
@@ -131,24 +160,44 @@ export function SurveyQuestionnaire({
       return;
     }
 
-    // Mutating responses for each question
-    mappedResponses.forEach((response) => submitResponse.mutate(response));
+    try {
+      // Submitting responses for each question
+      await Promise.all(
+        mappedResponses.map((response) => submitResponse.mutateAsync(response)),
+      );
 
-    toast({
-      title: "Success!",
-      description: "Your survey has been submitted.",
-    });
+      // Navigate to the next role
+      const nextHref = getNextHref();
+      if (nextHref) {
+        window.location.assign(nextHref);
+      } else {
+        toast({
+          title: "Success!",
+          description: "Your survey has been submitted.",
+        });
+        // wait for 2 seconds before redirecting to the thank you page
+        setTimeout(() => {
+          window.location.assign("/survey/thank-you");
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Error submitting responses:", error);
+      toast({
+        title: "Error!",
+        description: "An error occurred while submitting the survey responses.",
+        variant: "destructive",
+      });
+    }
   }
 
   const submitResponse = api.survey.setQuestionResult.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       console.log("Response submitted successfully");
-      console.log("Response data:", data);
-      router.refresh();
-      setResponses({});
+      return true;
     },
     onError: (error) => {
       console.error("Error submitting response:", error);
+      return false;
     },
   });
 
@@ -166,11 +215,21 @@ export function SurveyQuestionnaire({
       id: role.id,
       href: `/survey/${slugify(role.role)}`,
       label: role.role,
-      current: role.role === currentRole,
-      completed: true,
+      current: slugify(role.role) === currentRole,
+      completed: hasAnsweredAllQuestionsForRole(
+        userAnswersForRole,
+        role.id,
+        questions,
+      ),
     }));
 
-  console.log("Sections:", selectedRolesForProgressBar);
+  function getNextHref() {
+    // lookup the current index of the current role
+    const index = selectedRolesForProgressBar.findIndex(
+      (role) => role.current === true,
+    );
+    return selectedRolesForProgressBar[index + 1]?.href;
+  }
 
   return (
     <div>
@@ -183,14 +242,12 @@ export function SurveyQuestionnaire({
           className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
         >
           <Table divClassname="">
-            <TableHeader className="sticky top-0 z-10 h-10 w-full">
+            <TableHeader className="sticky top-0 z-10 h-10 w-full bg-slate-100 dark:bg-slate-900">
               <TableRow>
                 <TableHead className="w-[200px]">Question</TableHead>
                 {answerOptions.map((option) => (
                   <TableHead key={option.id}>
-                    {isMobile
-                      ? idToTextMapMobile[option.option]
-                      : idToTextMap[option.option]}
+                    {idToTextMap[option.option]}
                   </TableHead>
                 ))}
               </TableRow>
@@ -202,12 +259,19 @@ export function SurveyQuestionnaire({
                   name={question.id}
                   key={`${question.id}`}
                   render={({ field }) => (
-                    <TableRow key={question.id}>
+                    <TableRow
+                      key={question.id}
+                      className={
+                        form.formState.errors[question.id]
+                          ? "!border-2 !border-dashed !border-red-500"
+                          : ""
+                      }
+                    >
+                      {/* add a dashed border of 1px in color red in case of validation error */}
                       <TableCell>
                         {question.questionText}
                         <FormMessage />
                       </TableCell>
-
                       {answerOptions.map((option) => (
                         <TableCell key={option.id}>
                           <FormItem>
@@ -224,14 +288,10 @@ export function SurveyQuestionnaire({
                                   <FormControl>
                                     <RadioGroupItem
                                       value={option.id}
-                                      onChange={() => {
-                                        field.onChange(option.id);
-                                        handleResponseSelection(
-                                          question.id,
-                                          option.id,
-                                        );
-                                      }}
-                                      checked={field.value === option.id}
+                                      checked={
+                                        field.value === option.id ||
+                                        responses[question.id] === option.id
+                                      }
                                     />
                                   </FormControl>
                                 </label>
@@ -246,7 +306,7 @@ export function SurveyQuestionnaire({
               ))}
             </TableBody>
           </Table>
-          <Button type="submit">Submit</Button>
+          <Button type="submit">{getNextHref() ? "Next" : "Submit"}</Button>
         </form>
       </Form>
     </div>

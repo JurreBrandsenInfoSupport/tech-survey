@@ -56,7 +56,7 @@ export default function SelectRoles({
           >
             <input
               type="checkbox"
-              className="mr-2 cursor-pointer"
+              className="accent-custom-primary mr-2 cursor-pointer"
               checked={role.default || selectedRoles.includes(role.id)}
               onChange={() => handleRoleToggle(role.id)}
               disabled={role.default}

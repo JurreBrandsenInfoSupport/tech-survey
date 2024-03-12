@@ -1,8 +1,10 @@
 export const slugify = (text: string): string => {
   return text
     .toLowerCase()
-    .replace(/ /g, "-") // Replace spaces with dashes
-    .replace(/[^\w-]+/g, ""); // Remove non-word characters except dashes
+    .replace(/ \/ /g, "-") // Replace forward slash with dash surrounded by spaces
+    .replace(/\//g, "-") // replace forward slash with dash
+    .replace(/\s+/g, "-") // Replace spaces with dashes
+    .replace(/[^\w-]/g, ""); // Remove non-word characters except dashes
 };
 
 export const slugToId: Record<string, string> = {
@@ -18,7 +20,7 @@ export const slugToId: Record<string, string> = {
   "application-architecture": "cltfn47k4000f2hsdtccq2i1r",
   "infrastructure-engineering": "cltfn47k4000g2hsdyrp34990",
   "mobile-development": "cltfn47k4000h2hsdd1arf5og",
-  "wow": "cltfn47k4000i2hsdr2zhoqjb",
+  wow: "cltfn47k4000i2hsdr2zhoqjb",
   "product-owner-analist-requirements-engineer": "cltfn47k4000j2hsd7q5pf7rx",
-  "general": "cltfn47k4000k2hsdx4ly9hje",
+  general: "cltfn47k4000k2hsdx4ly9hje",
 } as const;

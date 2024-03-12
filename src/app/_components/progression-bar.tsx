@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Fragment } from "react";
+import { type Section } from "~/models/types";
 
-const ProgressionBar = ({ roles }: { roles: any[] }) => {
+const ProgressionBar = ({ roles }: { roles: Section[] }) => {
   const totalroles = roles.length;
   const completedroles = roles.filter((section) => section.completed).length;
   const progressPercentage = (completedroles / totalroles) * 100;
@@ -23,7 +24,13 @@ const ProgressionBar = ({ roles }: { roles: any[] }) => {
                 className="relative flex items-center justify-center"
               >
                 <div
-                  className={`mb-1 h-6 w-6 rounded-full border-2 ${section.completed ? "border-green-500 bg-green-500" : "border-gray-300"}`}
+                  className={`mb-1 h-6 w-6 rounded-full border-2 ${
+                    section.current
+                      ? "border-custom-secondary bg-custom-primary"
+                      : section.completed
+                        ? "border-green-500 bg-green-500"
+                        : "border-gray-300"
+                  }`}
                 ></div>
                 <div
                   className="absolute -rotate-45 whitespace-nowrap text-xs font-semibold"
@@ -39,7 +46,11 @@ const ProgressionBar = ({ roles }: { roles: any[] }) => {
               {/* Line (except for the last section) */}
               {index !== roles.length - 1 && (
                 <div
-                  className={`mx-2 h-0.5 flex-1 ${section.completed && roles[index + 1].completed ? "bg-green-500" : "bg-gray-300"}`}
+                  className={`mx-2 h-0.5 flex-1 ${
+                    section.completed && roles[index + 1]?.completed
+                      ? "bg-green-500"
+                      : "bg-gray-300"
+                  }`}
                 ></div>
               )}
             </Fragment>
@@ -48,7 +59,9 @@ const ProgressionBar = ({ roles }: { roles: any[] }) => {
       </div>
       <div className="flex items-center justify-between">
         <h3 className="hidden text-lg font-semibold">Progress</h3>
-        <span className="text-sm">{progressPercentage}% Completed</span>
+        <span className="text-sm">
+          {progressPercentage.toFixed(2)}% Completed
+        </span>
       </div>
     </nav>
   );
