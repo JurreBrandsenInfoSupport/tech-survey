@@ -42,6 +42,25 @@ export const surveyRouter = createTRPCRouter({
       return user.roles as Role[];
     }),
 
+  getUserAnswersForRole: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userAnswers = await ctx.db.questionResult.findMany({
+        where: {
+          userId: input.userId,
+        },
+        include: {
+          question: {
+            include: {
+              roles: true,
+            },
+          },
+        },
+      });
+
+      return userAnswers;
+    }),
+
   setRole: protectedProcedure
     .input(z.object({ userId: z.string(), roleIds: z.array(z.string()) }))
     .mutation(async ({ ctx, input }) => {

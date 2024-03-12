@@ -1,6 +1,11 @@
 "use client";
 
-import { type Role, type AnswerOption, type Question } from "~/models/types";
+import {
+  type Role,
+  type AnswerOption,
+  type Question,
+  type QuestionResult,
+} from "~/models/types";
 import { useRouter, usePathname, notFound } from "next/navigation";
 import { useState } from "react";
 
@@ -41,11 +46,15 @@ export function SurveyQuestionnaire({
   questions,
   answerOptions,
   userSelectedRoles,
+  userAnswersForRole,
+  allRoles,
 }: {
   session: Session;
   questions: Question[];
   answerOptions: AnswerOption[];
   userSelectedRoles: Role[];
+  userAnswersForRole: QuestionResult[];
+  allRoles: Role[];
 }) {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [selectedRoles] = useState<string[]>(
@@ -80,6 +89,48 @@ export function SurveyQuestionnaire({
     );
   }
 
+  // function that check if a user already has more than 1 response for a question
+  function hasAnsweredAllQuestionsForRole(
+    userAnswersForRole: QuestionResult[],
+    roleId: string,
+    questions: Question[],
+  ) {
+    console.log("-------------------");
+
+    const questionsForRole = userAnswersForRole.filter((answer) =>
+      answer.question.roles?.some((role) => role.id === roleId),
+    );
+
+    console.log("Questions for role:", questionsForRole);
+
+    const totalQuestionsForRole = questions.filter((question) =>
+      question.roleIds.some((role) => role === roleId),
+    ).length;
+
+    console.log("Total questions for role:", totalQuestionsForRole);
+
+    const answeredQuestionsForRole = questionsForRole.filter(
+      (answer) => answer.answerId !== undefined,
+    );
+
+    console.log(
+      "Answered questions for role:",
+      answeredQuestionsForRole.length,
+    );
+
+    return answeredQuestionsForRole.length >= totalQuestionsForRole;
+  }
+
+  // debug check for all roles if a user has more than 1 response for a question
+  allRoles.forEach((role) => {
+    console.log(
+      "Role:",
+      role.role,
+      "Has completed all questions:",
+      hasAnsweredAllQuestionsForRole(userAnswersForRole, role.id, questions),
+    );
+  });
+
   const router = useRouter();
   const isMobile = isMobileDevice();
 
@@ -103,7 +154,7 @@ export function SurveyQuestionnaire({
         [question.id]: z.enum(
           [question.id, ...answerOptions.map((option) => option.id)],
           {
-            required_error: `You need to select an answer for "${question.questionText}"`,
+            required_error: `You need to select an answer`,
           },
         ),
       };
@@ -168,7 +219,11 @@ export function SurveyQuestionnaire({
       href: `/survey/${slugify(role.role)}`,
       label: role.role,
       current: slugify(role.role) === currentRole,
-      completed: false,
+      completed: hasAnsweredAllQuestionsForRole(
+        userAnswersForRole,
+        role.id,
+        questions,
+      ),
     }));
 
   console.log("Sections:", selectedRolesForProgressBar);
@@ -184,7 +239,7 @@ export function SurveyQuestionnaire({
           className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
         >
           <Table divClassname="">
-            <TableHeader className="sticky top-0 z-10 h-10 w-full">
+            <TableHeader className="sticky top-0 z-10 h-10 w-full bg-slate-100 dark:bg-slate-900">
               <TableRow>
                 <TableHead className="w-[200px]">Question</TableHead>
                 {answerOptions.map((option) => (
