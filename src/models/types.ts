@@ -13,7 +13,7 @@ export interface Question {
   id: string;
   surveyId: string;
   questionText: string;
-  roleIds: string[];
+  roleIds?: string[];
   roles?: Role[];
 }
 
@@ -27,9 +27,7 @@ export interface QuestionResult {
   userId: string;
   questionId: string;
   answerId: string;
-  user: User;
   question: Question;
-  answer: AnswerOption;
 }
 
 export interface User {

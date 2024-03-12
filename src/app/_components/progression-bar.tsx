@@ -59,7 +59,9 @@ const ProgressionBar = ({ roles }: { roles: Section[] }) => {
       </div>
       <div className="flex items-center justify-between">
         <h3 className="hidden text-lg font-semibold">Progress</h3>
-        <span className="text-sm">{progressPercentage}% Completed</span>
+        <span className="text-sm">
+          {progressPercentage.toFixed(2)}% Completed
+        </span>
       </div>
     </nav>
   );

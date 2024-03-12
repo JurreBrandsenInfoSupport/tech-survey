@@ -12,19 +12,13 @@ const SurveyPage: React.FC = async () => {
     return <div>Unauthenticated</div>;
   }
 
-  const [
-    questions,
-    answerOptions,
-    userSelectedRoles,
-    userAnswersForRole,
-    allRoles,
-  ] = await Promise.all([
-    api.survey.getQuestions.query(),
-    api.survey.getAnswerOptions.query(),
-    api.survey.getUserSelectedRoles.query({ userId: session.user.id }),
-    api.survey.getUserAnswersForRole.query({ userId: session.user.id }),
-    api.survey.getRoles.query(),
-  ]);
+  const [questions, answerOptions, userSelectedRoles, userAnswersForRole] =
+    await Promise.all([
+      api.survey.getQuestions.query(),
+      api.survey.getAnswerOptions.query(),
+      api.survey.getUserSelectedRoles.query({ userId: session.user.id }),
+      api.survey.getUserAnswersForRole.query({ userId: session.user.id }),
+    ]);
 
   const formattedQuestions: Question[] = questions.map((question) => ({
     id: question.id,
@@ -53,7 +47,6 @@ const SurveyPage: React.FC = async () => {
           answerOptions={formattedAnswerOptions}
           userSelectedRoles={userSelectedRoles}
           userAnswersForRole={userAnswersForRole}
-          allRoles={allRoles}
         />
       </div>
     </main>

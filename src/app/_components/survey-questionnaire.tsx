@@ -47,14 +47,12 @@ export function SurveyQuestionnaire({
   answerOptions,
   userSelectedRoles,
   userAnswersForRole,
-  allRoles,
 }: {
   session: Session;
   questions: Question[];
   answerOptions: AnswerOption[];
   userSelectedRoles: Role[];
   userAnswersForRole: QuestionResult[];
-  allRoles: Role[];
 }) {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [selectedRoles] = useState<string[]>(
@@ -122,7 +120,7 @@ export function SurveyQuestionnaire({
   }
 
   // debug check for all roles if a user has more than 1 response for a question
-  allRoles.forEach((role) => {
+  userSelectedRoles.forEach((role) => {
     console.log(
       "Role:",
       role.role,
