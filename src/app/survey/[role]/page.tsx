@@ -3,7 +3,16 @@ import { getServerAuthSession } from "~/server/auth";
 import { type AnswerOption, type Question } from "~/models/types";
 import { Login } from "~/app/_components/login";
 import { ModeToggle } from "~/app/_components/mode-toggle";
+import { Suspense } from "react";
 import { SurveyQuestionnaire } from "~/app/_components/survey-questionnaire";
+import Loading from "~/app/loading";
+
+// Wrap the asynchronous data fetching with Suspense
+const SuspenseSurveyData = () => (
+  <Suspense fallback={<Loading />}>
+    <SurveyPage />
+  </Suspense>
+);
 
 const SurveyPage: React.FC = async () => {
   const session = await getServerAuthSession();
@@ -12,6 +21,7 @@ const SurveyPage: React.FC = async () => {
     return <div>Unauthenticated</div>;
   }
 
+  // Wrap the Promise.all call with React.lazy
   const [questions, answerOptions, userSelectedRoles, userAnswersForRole] =
     await Promise.all([
       api.survey.getQuestions.query(),
@@ -52,4 +62,4 @@ const SurveyPage: React.FC = async () => {
     </main>
   );
 };
-export default SurveyPage;
+export default SuspenseSurveyData;
