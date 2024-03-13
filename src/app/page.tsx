@@ -1,10 +1,7 @@
 import { getServerAuthSession } from "~/server/auth";
 import { Login } from "./_components/login";
-
-import Link from "next/link";
 import SelectRole from "./_components/select-role";
 import { ModeToggle } from "./_components/mode-toggle";
-import { Button } from "~/components/ui/button";
 
 import React, { Suspense } from "react";
 import { type Session } from "next-auth";
@@ -64,9 +61,9 @@ const SelectRoleWrapper: React.FC<{ session: Session }> = async ({
   session,
 }) => {
   const [roles, userRoles] = await Promise.all([
-    new Promise((resolve) => setTimeout(resolve, 3000)).then(() =>
-      db.role.findMany(),
-    ),
+    // new Promise((resolve) => setTimeout(resolve, 3000)).then(() =>
+    db.role.findMany(),
+    // ),
     db.user.findUnique({
       where: {
         id: session.user.id,
