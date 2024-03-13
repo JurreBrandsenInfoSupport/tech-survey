@@ -6,7 +6,7 @@ import {
   type Question,
   type QuestionResult,
 } from "~/models/types";
-import { usePathname, notFound } from "next/navigation";
+
 import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
@@ -26,48 +26,31 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Label } from "~/components/ui/label";
 
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
 
-import Navigation from "./progression-bar";
-import useScreenSize from "./useScreenSize";
-import { MobileSurveyQuestionnaire } from "./mobile/survey-questions";
-
-export function SurveyQuestionnaire({
+export function MobileSurveyQuestionnaire({
   session,
   questions,
+  filteredQuestions,
   answerOptions,
   userSelectedRoles,
   userAnswersForRole,
+  currentRole,
 }: {
   session: Session;
   questions: Question[];
+  filteredQuestions: Question[];
   answerOptions: AnswerOption[];
   userSelectedRoles: Role[];
   userAnswersForRole: QuestionResult[];
+  currentRole: string;
 }) {
   const [responses, setResponses] = useState<Record<string, string>>({});
-  const [selectedRoles] = useState<string[]>(
-    userSelectedRoles.map((role) => role.id),
-  );
-  const pathname = usePathname() || "";
-
-  // get the current role from the url, which is /survey/[role]
-  const currentRole = pathname.split("/").pop() ?? "";
-  if (!slugToId[currentRole]) {
-    notFound();
-  }
-
   type InitialResponses = Record<string, string>;
 
   useEffect(() => {
@@ -82,13 +65,6 @@ export function SurveyQuestionnaire({
     });
     setResponses(initialResponses);
   }, [userAnswersForRole, currentRole]);
-
-  const filteredQuestions = questions.filter(
-    (question) =>
-      question.roleIds?.some(
-        (roleId) => roleId === slugToId[currentRole ?? ""],
-      ) && selectedRoles.includes(slugToId[currentRole ?? ""] ?? ""),
-  );
 
   // function that check if a user already has more than 1 response for a question
   function hasAnsweredAllQuestionsForRole(
@@ -242,111 +218,76 @@ export function SurveyQuestionnaire({
     return selectedRolesForProgressBar[index + 1]?.href;
   }
 
-  const screenSize = useScreenSize();
-
   return (
     <div>
-      <div>
-        <Navigation roles={selectedRolesForProgressBar} />
-      </div>
-      {screenSize.width < 768 && (
-        <div>
-          <MobileSurveyQuestionnaire
-            session={session}
-            questions={questions}
-            filteredQuestions={filteredQuestions}
-            answerOptions={answerOptions}
-            userSelectedRoles={userSelectedRoles}
-            userAnswersForRole={userAnswersForRole}
-            currentRole={currentRole}
-          />
-        </div>
-      )}
-      {screenSize.width >= 768 && (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
-          >
-            <Table divClassname="">
-              <TableHeader className="sticky top-0 z-10 h-10 w-full bg-slate-100 dark:bg-slate-900">
-                <TableRow>
-                  <TableHead className="w-[200px]">Question</TableHead>
-                  {answerOptions.map((option) => (
-                    <TableHead key={option.id}>
-                      {idToTextMap[option.option]}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredQuestions?.map((question) => (
-                  <FormField
-                    control={form.control}
-                    name={question.id}
-                    key={`${question.id}`}
-                    render={({ field }) => (
-                      <TableRow
-                        key={question.id}
-                        className={
-                          form.formState.errors[question.id]
-                            ? "!border-2 !border-dashed !border-red-500"
-                            : ""
-                        }
-                      >
-                        {/* add a dashed border of 1px in color red in case of validation error */}
-                        <TableCell>
-                          {question.questionText}
-                          <FormMessage />
-                        </TableCell>
-                        {answerOptions.map((option) => (
-                          <TableCell key={option.id}>
-                            <FormItem>
-                              <FormControl>
-                                <RadioGroup
-                                  onValueChange={async (value) => {
-                                    field.onChange(value);
-                                    try {
-                                      await handleResponseSelection(
-                                        question.id,
-                                        value,
-                                      );
-                                    } catch (error) {
-                                      console.error(
-                                        "Error in handleResponseSelection:",
-                                        error,
-                                      );
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
+        >
+          {filteredQuestions?.map((question) => (
+            <div key={question.id} className="mx-auto w-full">
+              <FormField
+                control={form.control}
+                name={question.id}
+                key={`${question.id}`}
+                render={({ field }) => (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>
+                        {question.questionText}
+                        <FormMessage />
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {answerOptions.map((option) => (
+                        <FormItem key={option.id}>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={async (value) => {
+                                field.onChange(value);
+                                try {
+                                  await handleResponseSelection(
+                                    question.id,
+                                    value,
+                                  );
+                                } catch (error) {
+                                  console.error(
+                                    "Error in handleResponseSelection:",
+                                    error,
+                                  );
+                                }
+                              }}
+                              value={field.value}
+                              className="flex flex-col space-y-1"
+                            >
+                              <label className="flex cursor-pointer items-center space-x-2 rounded-lg p-2 hover:bg-gray-100">
+                                <FormControl>
+                                  <RadioGroupItem
+                                    value={option.id}
+                                    checked={
+                                      field.value === option.id ||
+                                      responses[question.id] === option.id
                                     }
-                                  }}
-                                  value={field.value}
-                                  className="flex flex-col space-y-1"
-                                >
-                                  <label className="flex cursor-pointer items-center justify-center">
-                                    <FormControl>
-                                      <RadioGroupItem
-                                        value={option.id}
-                                        checked={
-                                          field.value === option.id ||
-                                          responses[question.id] === option.id
-                                        }
-                                      />
-                                    </FormControl>
-                                  </label>
-                                </RadioGroup>
-                              </FormControl>
-                            </FormItem>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-            <Button type="submit">{getNextHref() ? "Next" : "Submit"}</Button>
-          </form>
-        </Form>
-      )}
+                                  />
+                                </FormControl>
+                                <span className=":dark:text-white-100 text-gray-900">
+                                  {idToTextMap[option.option]}
+                                </span>
+                              </label>
+                            </RadioGroup>
+                          </FormControl>
+                        </FormItem>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              />
+            </div>
+          ))}
+          <Button type="submit">{getNextHref() ? "Next" : "Submit"}</Button>
+        </form>
+      </Form>
     </div>
   );
 }
