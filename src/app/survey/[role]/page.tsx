@@ -1,4 +1,3 @@
-import { api } from "~/trpc/server";
 import { getServerAuthSession } from "~/server/auth";
 import { type AnswerOption, type Question } from "~/models/types";
 import { Login } from "~/app/_components/login";
@@ -6,6 +5,7 @@ import { ModeToggle } from "~/app/_components/mode-toggle";
 import { Suspense } from "react";
 import { SurveyQuestionnaire } from "~/app/_components/survey-questionnaire";
 import Loading from "~/app/loading";
+import { db } from "~/server/db";
 
 // Wrap the asynchronous data fetching with Suspense
 const SuspenseSurveyData = () => (
@@ -21,14 +21,42 @@ const SurveyPage: React.FC = async () => {
     return <div>Unauthenticated</div>;
   }
 
-  // Wrap the Promise.all call with React.lazy
-  const [questions, answerOptions, userSelectedRoles, userAnswersForRole] =
+  const [questions, answerOptions, userRoles, userAnswersForRole] =
     await Promise.all([
-      api.survey.getQuestions.query(),
-      api.survey.getAnswerOptions.query(),
-      api.survey.getUserSelectedRoles.query({ userId: session.user.id }),
-      api.survey.getUserAnswersForRole.query({ userId: session.user.id }),
+      // Delayed call to simulate slow API
+      // new Promise((resolve) => setTimeout(resolve, 3000)).then(() =>
+      db.question.findMany({
+        include: {
+          roles: true,
+        },
+      }),
+      // ),
+      db.answerOption.findMany(),
+      db.user
+        .findUnique({
+          where: {
+            id: session.user.id,
+          },
+          select: {
+            roles: true,
+          },
+        })
+        .then((user) => user?.roles),
+      db.questionResult.findMany({
+        where: {
+          userId: session.user.id,
+        },
+        include: {
+          question: {
+            include: {
+              roles: true,
+            },
+          },
+        },
+      }),
     ]);
+
+  const userSelectedRoles = userRoles ?? [];
 
   const formattedQuestions: Question[] = questions.map((question) => ({
     id: question.id,

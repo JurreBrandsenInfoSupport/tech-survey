@@ -9,7 +9,6 @@ import {
 } from "~/components/ui/table";
 import { idToTextMap } from "~/utils/optionMapping";
 import { ModeToggle } from "./_components/mode-toggle";
-import { Login } from "./_components/login";
 
 export default function SkeletonDemo() {
   const answerOptions = [
