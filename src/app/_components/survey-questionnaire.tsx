@@ -113,11 +113,17 @@ export function SurveyQuestionnaire({
     (question) => !responses[question.id],
   );
 
-  const handleResponseSelection = (questionId: string, answerId: string) => {
+  const handleResponseSelection = async (
+    questionId: string,
+    answerId: string,
+  ) => {
     setResponses((prevResponses) => ({
       ...prevResponses,
       [questionId]: answerId,
     }));
+
+    console.log("responses", responses);
+    await saveResponsesToDatabase();
   };
 
   type QuestionSchema = Record<string, z.ZodEnum<[string, ...string[]]>>;
@@ -142,7 +148,9 @@ export function SurveyQuestionnaire({
     resolver: zodResolver(FormSchema),
   });
 
-  async function onSubmit() {
+  async function saveResponsesToDatabase() {
+    console.log("responses", responses);
+
     const mappedResponses = Object.entries(responses).map(
       ([questionId, answerId]) => ({
         userId: session?.user.id,
@@ -151,22 +159,28 @@ export function SurveyQuestionnaire({
       }),
     );
 
-    if (mappedResponses.length === 0) {
-      toast({
-        title: "Error!",
-        description: "Please provide at least one response.",
-        variant: "destructive",
-      });
-      return;
-    }
+    console.log("mappedResponses", mappedResponses);
 
     try {
       // Submitting responses for each question
       await Promise.all(
         mappedResponses.map((response) => submitResponse.mutateAsync(response)),
       );
+      console.log("Responses saved successfully");
+    } catch (error) {
+      console.error("Error saving responses:", error);
+      // You might want to handle the error here, e.g., display a toast
+      toast({
+        title: "Error!",
+        description: "Failed to save responses.",
+        variant: "destructive",
+      });
+    }
+  }
 
-      // Navigate to the next role
+  async function onSubmit() {
+    try {
+      await saveResponsesToDatabase();
       const nextHref = getNextHref();
       if (nextHref) {
         window.location.assign(nextHref);
@@ -181,12 +195,7 @@ export function SurveyQuestionnaire({
         }, 2000);
       }
     } catch (error) {
-      console.error("Error submitting responses:", error);
-      toast({
-        title: "Error!",
-        description: "An error occurred while submitting the survey responses.",
-        variant: "destructive",
-      });
+      console.error("Error in onSubmit:", error);
     }
   }
 
@@ -277,9 +286,19 @@ export function SurveyQuestionnaire({
                           <FormItem>
                             <FormControl>
                               <RadioGroup
-                                onValueChange={(value) => {
+                                onValueChange={async (value) => {
                                   field.onChange(value);
-                                  handleResponseSelection(question.id, value);
+                                  try {
+                                    await handleResponseSelection(
+                                      question.id,
+                                      value,
+                                    );
+                                  } catch (error) {
+                                    console.error(
+                                      "Error in handleResponseSelection:",
+                                      error,
+                                    );
+                                  }
                                 }}
                                 value={field.value}
                                 className="flex flex-col space-y-1"
