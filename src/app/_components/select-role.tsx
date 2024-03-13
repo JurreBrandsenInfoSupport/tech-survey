@@ -17,12 +17,19 @@ export default function SelectRoles({
   userSelectedRoles: Role[];
 }) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const setRolesMutation = api.survey.setRole.useMutation();
 
   useEffect(() => {
     setSelectedRoles(userSelectedRoles.map((role) => role.id));
-  }, [userSelectedRoles]);
 
-  const setRolesMutation = api.survey.setRole.useMutation();
+    // if the user has no roles selected, set the default roles
+    if (userSelectedRoles.length === 0) {
+      setRolesMutation.mutate({
+        userId: session.user.id,
+        roleIds: roles.filter((role) => role.default).map((role) => role.id),
+      });
+    }
+  }, [userSelectedRoles, roles, session.user.id, setRolesMutation]);
 
   const handleRoleToggle = (roleId: string) => {
     const index = selectedRoles.indexOf(roleId);
@@ -39,6 +46,13 @@ export default function SelectRoles({
     setRolesMutation.mutate({
       userId: session.user.id,
       roleIds: updatedRoles,
+    });
+    // note: always make sure the default roles are not included in the mutation
+    setRolesMutation.mutate({
+      userId: session.user.id,
+      roleIds: updatedRoles.filter(
+        (roleId) => !roles.find((role) => role.id === roleId)?.default,
+      ),
     });
   };
 

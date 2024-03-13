@@ -7,12 +7,8 @@ import {
   type QuestionResult,
 } from "~/models/types";
 import { usePathname, notFound } from "next/navigation";
-import { useEffect, useState } from "react";
-
-import { api } from "~/trpc/react";
+import { useState } from "react";
 import { type Session } from "next-auth";
-
-import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
 
 import Navigation from "./progression-bar";
@@ -33,7 +29,6 @@ export function SurveyQuestionnaire({
   userSelectedRoles: Role[];
   userAnswersForRole: QuestionResult[];
 }) {
-  const [responses, setResponses] = useState<Record<string, string>>({});
   const [selectedRoles] = useState<string[]>(
     userSelectedRoles.map((role) => role.id),
   );
@@ -44,21 +39,6 @@ export function SurveyQuestionnaire({
   if (!slugToId[currentRole]) {
     notFound();
   }
-
-  type InitialResponses = Record<string, string>;
-
-  useEffect(() => {
-    // Populate responses with previous answers for the current role when component mounts
-    const initialResponses: InitialResponses = {};
-    userAnswersForRole.forEach((answer) => {
-      if (
-        answer.question.roles?.some((role) => role.id === slugToId[currentRole])
-      ) {
-        initialResponses[answer.question.id] = answer.answerId;
-      }
-    });
-    setResponses(initialResponses);
-  }, [userAnswersForRole, currentRole]);
 
   const filteredQuestions = questions.filter(
     (question) =>
@@ -88,68 +68,6 @@ export function SurveyQuestionnaire({
     return answeredQuestionsForRole.length >= totalQuestionsForRole;
   }
 
-  async function saveResponsesToDatabase() {
-    console.log("responses", responses);
-
-    const mappedResponses = Object.entries(responses).map(
-      ([questionId, answerId]) => ({
-        userId: session?.user.id,
-        questionId,
-        answerId,
-      }),
-    );
-
-    console.log("mappedResponses", mappedResponses);
-
-    try {
-      // Submitting responses for each question
-      await Promise.all(
-        mappedResponses.map((response) => submitResponse.mutateAsync(response)),
-      );
-      console.log("Responses saved successfully");
-    } catch (error) {
-      console.error("Error saving responses:", error);
-      // You might want to handle the error here, e.g., display a toast
-      toast({
-        title: "Error!",
-        description: "Failed to save responses.",
-        variant: "destructive",
-      });
-    }
-  }
-
-  async function onSubmit() {
-    try {
-      await saveResponsesToDatabase();
-      const nextHref = getNextHref();
-      if (nextHref) {
-        window.location.assign(nextHref);
-      } else {
-        toast({
-          title: "Success!",
-          description: "Your survey has been submitted.",
-        });
-        // wait for 2 seconds before redirecting to the thank you page
-        setTimeout(() => {
-          window.location.assign("/survey/thank-you");
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Error in onSubmit:", error);
-    }
-  }
-
-  const submitResponse = api.survey.setQuestionResult.useMutation({
-    onSuccess: () => {
-      console.log("Response submitted successfully");
-      return true;
-    },
-    onError: (error) => {
-      console.error("Error submitting response:", error);
-      return false;
-    },
-  });
-
   const selectedRolesForProgressBar = userSelectedRoles
     .sort((a, b) => {
       const roleA = a.role.toLowerCase();
@@ -171,14 +89,6 @@ export function SurveyQuestionnaire({
         questions,
       ),
     }));
-
-  function getNextHref() {
-    // lookup the current index of the current role
-    const index = selectedRolesForProgressBar.findIndex(
-      (role) => role.current === true,
-    );
-    return selectedRolesForProgressBar[index + 1]?.href;
-  }
 
   const screenSize = useScreenSize();
 
