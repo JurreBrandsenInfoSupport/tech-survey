@@ -11,37 +11,14 @@ import { useEffect, useState } from "react";
 
 import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
-import { idToTextMap } from "~/utils/optionMapping";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-import { Button } from "~/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "~/components/ui/form";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
-
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
 
 import Navigation from "./progression-bar";
 import useScreenSize from "./useScreenSize";
 import { MobileSurveyQuestionnaire } from "./mobile/survey-questions";
+import { SurveyQuestions } from "./survey-questions";
 
 export function SurveyQuestionnaire({
   session,
@@ -110,45 +87,6 @@ export function SurveyQuestionnaire({
 
     return answeredQuestionsForRole.length >= totalQuestionsForRole;
   }
-
-  const unansweredQuestions = filteredQuestions.filter(
-    (question) => !responses[question.id],
-  );
-
-  const handleResponseSelection = async (
-    questionId: string,
-    answerId: string,
-  ) => {
-    setResponses((prevResponses) => ({
-      ...prevResponses,
-      [questionId]: answerId,
-    }));
-
-    console.log("responses", responses);
-    await saveResponsesToDatabase();
-  };
-
-  type QuestionSchema = Record<string, z.ZodEnum<[string, ...string[]]>>;
-
-  // look at the responses to create validation schema
-  const FormSchema = z.object(
-    unansweredQuestions.reduce<QuestionSchema>((schema, question) => {
-      // Add a validation rule for each question ID
-      return {
-        ...schema,
-        [question.id]: z.enum(
-          [question.id, ...answerOptions.map((option) => option.id)],
-          {
-            required_error: `You need to select an answer`,
-          },
-        ),
-      };
-    }, {}),
-  );
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
 
   async function saveResponsesToDatabase() {
     console.log("responses", responses);
@@ -263,89 +201,17 @@ export function SurveyQuestionnaire({
         </div>
       )}
       {screenSize.width >= 768 && (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
-          >
-            <Table divClassname="">
-              <TableHeader className="sticky top-0 z-10 h-10 w-full bg-slate-100 dark:bg-slate-900">
-                <TableRow>
-                  <TableHead className="w-[200px]">Question</TableHead>
-                  {answerOptions.map((option) => (
-                    <TableHead key={option.id}>
-                      {idToTextMap[option.option]}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredQuestions?.map((question) => (
-                  <FormField
-                    control={form.control}
-                    name={question.id}
-                    key={`${question.id}`}
-                    render={({ field }) => (
-                      <TableRow
-                        key={question.id}
-                        className={
-                          form.formState.errors[question.id]
-                            ? "!border-2 !border-dashed !border-red-500"
-                            : ""
-                        }
-                      >
-                        {/* add a dashed border of 1px in color red in case of validation error */}
-                        <TableCell>
-                          {question.questionText}
-                          <FormMessage />
-                        </TableCell>
-                        {answerOptions.map((option) => (
-                          <TableCell key={option.id}>
-                            <FormItem>
-                              <FormControl>
-                                <RadioGroup
-                                  onValueChange={async (value) => {
-                                    field.onChange(value);
-                                    try {
-                                      await handleResponseSelection(
-                                        question.id,
-                                        value,
-                                      );
-                                    } catch (error) {
-                                      console.error(
-                                        "Error in handleResponseSelection:",
-                                        error,
-                                      );
-                                    }
-                                  }}
-                                  value={field.value}
-                                  className="flex flex-col space-y-1"
-                                >
-                                  <label className="flex cursor-pointer items-center justify-center">
-                                    <FormControl>
-                                      <RadioGroupItem
-                                        value={option.id}
-                                        checked={
-                                          field.value === option.id ||
-                                          responses[question.id] === option.id
-                                        }
-                                      />
-                                    </FormControl>
-                                  </label>
-                                </RadioGroup>
-                              </FormControl>
-                            </FormItem>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-            <Button type="submit">{getNextHref() ? "Next" : "Submit"}</Button>
-          </form>
-        </Form>
+        <div>
+          <SurveyQuestions
+            session={session}
+            questions={questions}
+            filteredQuestions={filteredQuestions}
+            answerOptions={answerOptions}
+            userSelectedRoles={userSelectedRoles}
+            userAnswersForRole={userAnswersForRole}
+            currentRole={currentRole}
+          />
+        </div>
       )}
     </div>
   );

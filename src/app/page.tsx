@@ -18,8 +18,11 @@ const Home: React.FC = async () => {
         <ModeToggle />
       </div>
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl">
-          <span className="text-custom-primary">Info Support</span> Tech Survey
+        <h1 className="text-center text-5xl font-extrabold tracking-tight">
+          <span className="block text-custom-primary sm:inline">
+            Info Support
+          </span>
+          <span className="block sm:inline"> Tech Survey</span>
         </h1>
         {!session && (
           <div>

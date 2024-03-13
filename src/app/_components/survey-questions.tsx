@@ -1,5 +1,3 @@
-"use client";
-
 import {
   type Role,
   type AnswerOption,
@@ -30,9 +28,16 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { toast } from "~/components/ui/use-toast";
 import { slugToId, slugify } from "~/utils/slugify";
 
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
 
-export function MobileSurveyQuestionnaire({
+export function SurveyQuestions({
   session,
   questions,
   filteredQuestions,
@@ -218,29 +223,45 @@ export function MobileSurveyQuestionnaire({
   }
 
   return (
-    <div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
-        >
-          {filteredQuestions?.map((question) => (
-            <div key={question.id} className="mx-auto w-full">
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid gap-4 md:grid-cols-1 lg:grid-cols-1"
+      >
+        <Table divClassname="">
+          <TableHeader className="sticky top-0 z-10 h-10 w-full bg-slate-100 dark:bg-slate-900">
+            <TableRow>
+              <TableHead className="w-[200px]">Question</TableHead>
+              {answerOptions.map((option) => (
+                <TableHead key={option.id}>
+                  {idToTextMap[option.option]}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredQuestions?.map((question) => (
               <FormField
                 control={form.control}
                 name={question.id}
                 key={`${question.id}`}
                 render={({ field }) => (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>
-                        {question.questionText}
-                        <FormMessage />
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {answerOptions.map((option) => (
-                        <FormItem key={option.id}>
+                  <TableRow
+                    key={question.id}
+                    className={
+                      form.formState.errors[question.id]
+                        ? "!border-2 !border-dashed !border-red-500"
+                        : ""
+                    }
+                  >
+                    {/* add a dashed border of 1px in color red in case of validation error */}
+                    <TableCell>
+                      {question.questionText}
+                      <FormMessage />
+                    </TableCell>
+                    {answerOptions.map((option) => (
+                      <TableCell key={option.id}>
+                        <FormItem>
                           <FormControl>
                             <RadioGroup
                               onValueChange={async (value) => {
@@ -260,7 +281,7 @@ export function MobileSurveyQuestionnaire({
                               value={field.value}
                               className="flex flex-col space-y-1"
                             >
-                              <label className="flex cursor-pointer items-center space-x-2 rounded-lg p-2 hover:bg-gray-100">
+                              <label className="flex cursor-pointer items-center justify-center">
                                 <FormControl>
                                   <RadioGroupItem
                                     value={option.id}
@@ -270,23 +291,20 @@ export function MobileSurveyQuestionnaire({
                                     }
                                   />
                                 </FormControl>
-                                <span className=":dark:text-white-100 text-gray-900">
-                                  {idToTextMap[option.option]}
-                                </span>
                               </label>
                             </RadioGroup>
                           </FormControl>
                         </FormItem>
-                      ))}
-                    </CardContent>
-                  </Card>
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 )}
               />
-            </div>
-          ))}
-          <Button type="submit">{getNextHref() ? "Next" : "Submit"}</Button>
-        </form>
-      </Form>
-    </div>
+            ))}
+          </TableBody>
+        </Table>
+        <Button type="submit">{getNextHref() ? "Next" : "Submit"}</Button>
+      </form>
+    </Form>
   );
 }
